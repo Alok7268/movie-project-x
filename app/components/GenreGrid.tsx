@@ -1,8 +1,7 @@
 'use client';
 
-import { useEffect } from 'react';
 import { InfiniteMovingCards } from './ui/infinite-moving-cards';
-import { getGenreImage, resetGenreImageCache } from '@/lib/movies';
+import { getGenreImage } from '@/lib/movies';
 
 interface GenreGridProps {
   genres: string[];
@@ -10,13 +9,8 @@ interface GenreGridProps {
 }
 
 export default function GenreGrid({ genres, onGenreClick }: GenreGridProps) {
-  // Reset cache when component mounts to ensure fresh assignment
-  useEffect(() => {
-    resetGenreImageCache();
-  }, []);
-
   // Convert genres to the format expected by InfiniteMovingCards
-  // Process genres in order to ensure unique image assignment
+  // Image selection is now deterministic, so no cache reset needed
   const genreItems = genres.map((genre) => ({
     quote: genre,
     name: genre,

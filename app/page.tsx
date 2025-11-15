@@ -1,4 +1,7 @@
-import { getAllMovies, getAllGenres, getTopRated, getYearRange } from '@/lib/movies';
+'use client';
+
+import { useRouter } from 'next/navigation';
+import { getAllMovies, getAllGenres, getTopRated, getYearRange, genreToSlug } from '@/lib/movies';
 import ThreeDMarqueeHero from './components/ThreeDMarqueeHero';
 import FeaturedMovies from './components/FeaturedMovies';
 import GenreGrid from './components/GenreGrid';
@@ -7,6 +10,8 @@ import Footer from './components/Footer';
 import SparklesBackground from './components/SparklesBackground';
 
 export default function Home() {
+  const router = useRouter();
+  
   // Get data
   const allMovies = getAllMovies();
   const allGenres = getAllGenres();
@@ -20,6 +25,12 @@ export default function Home() {
     years: yearRange,
   };
 
+  // Handle genre click - navigate to genre page
+  const handleGenreClick = (genre: string) => {
+    const slug = genreToSlug(genre);
+    router.push(`/${slug}`);
+  };
+
   return (
     <div className="min-h-screen relative bg-[#000814]">
       {/* Sparkles Background */}
@@ -30,7 +41,7 @@ export default function Home() {
         <NavigationHeader />
         <ThreeDMarqueeHero stats={stats} />
         <FeaturedMovies movies={topMovies} />
-        <GenreGrid genres={allGenres} />
+        <GenreGrid genres={allGenres} onGenreClick={handleGenreClick} />
         <Footer />
       </div>
     </div>

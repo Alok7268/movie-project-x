@@ -104,18 +104,20 @@ function hashString(str: string): number {
   return Math.abs(hash);
 }
 
-// Cache to track which movie IDs have been used for genre images
-// This ensures each genre gets a unique movie
-const usedMovieIds = new Set<number>();
-
+// Deterministic genre image selection - always returns the same image for the same genre
+// This ensures server and client render the same HTML (no hydration mismatch)
 export function getGenreImage(genre: string): string {
   // Get all movies in this genre, sorted by popularity and rating
+  // Sort is deterministic, so same genre always gets same order
   const allGenreMovies = getMoviesByGenre(genre).sort((a, b) => {
-    // Sort by vote average first, then by popularity
+    // Sort by vote average first, then by popularity, then by ID for consistency
     if (b.voteAverage !== a.voteAverage) {
       return b.voteAverage - a.voteAverage;
     }
-    return b.popularity - a.popularity;
+    if (b.popularity !== a.popularity) {
+      return b.popularity - a.popularity;
+    }
+    return a.id - b.id; // Stable sort by ID
   });
 
   if (allGenreMovies.length === 0) {
@@ -123,8 +125,8 @@ export function getGenreImage(genre: string): string {
     return '/no-poster.svg';
   }
 
-  // Use hash of genre name to select a consistent but unique movie index for each genre
-  // This ensures each genre gets a different starting point
+  // Use hash of genre name to select a consistent movie index for each genre
+  // This ensures each genre always gets the same movie (deterministic)
   const genreHash = hashString(genre);
   const startIndex = genreHash % allGenreMovies.length;
   
@@ -134,13 +136,8 @@ export function getGenreImage(genre: string): string {
     ...allGenreMovies.slice(0, startIndex)
   ];
 
-  // First, try to find a movie with a valid poster that hasn't been used yet
+  // Find the first movie with a valid poster (deterministic selection)
   for (const movie of moviesToCheck) {
-    // Skip if this movie ID has already been used for another genre
-    if (usedMovieIds.has(movie.id)) {
-      continue;
-    }
-
     if (movie.posterPath && 
         movie.posterPath.trim() !== '' && 
         !movie.posterPath.includes('no-poster') &&
@@ -151,20 +148,13 @@ export function getGenreImage(genre: string): string {
           !posterUrl.includes('no-poster') && 
           !posterUrl.includes('placeholder') &&
           (posterUrl.startsWith('http://') || posterUrl.startsWith('https://'))) {
-        // Mark this movie as used
-        usedMovieIds.add(movie.id);
         return posterUrl;
       }
     }
   }
 
-  // If no unused poster found, try backdrops
+  // If no poster found, try backdrops
   for (const movie of moviesToCheck) {
-    // Skip if this movie ID has already been used
-    if (usedMovieIds.has(movie.id)) {
-      continue;
-    }
-
     if (movie.backdropPath && 
         movie.backdropPath.trim() !== '' && 
         !movie.backdropPath.includes('no-backdrop') &&
@@ -175,26 +165,7 @@ export function getGenreImage(genre: string): string {
           !backdropUrl.includes('no-backdrop') && 
           !backdropUrl.includes('placeholder') &&
           (backdropUrl.startsWith('http://') || backdropUrl.startsWith('https://'))) {
-        // Mark this movie as used
-        usedMovieIds.add(movie.id);
         return backdropUrl;
-      }
-    }
-  }
-
-  // If still no image found, allow reuse but try to get a different one
-  // Reset and try again without the uniqueness constraint
-  for (const movie of moviesToCheck) {
-    if (movie.posterPath && 
-        movie.posterPath.trim() !== '' && 
-        !movie.posterPath.includes('no-poster') &&
-        !movie.posterPath.includes('placeholder')) {
-      const posterUrl = getPosterUrl(movie.posterPath, 'w500');
-      if (posterUrl && 
-          !posterUrl.includes('no-poster') && 
-          !posterUrl.includes('placeholder') &&
-          (posterUrl.startsWith('http://') || posterUrl.startsWith('https://'))) {
-        return posterUrl;
       }
     }
   }
@@ -203,8 +174,183 @@ export function getGenreImage(genre: string): string {
   return '/no-poster.svg';
 }
 
-// Function to reset the cache (useful for testing or if genres change)
+// Function kept for backward compatibility, but no longer needed
+// Image selection is now deterministic and doesn't use a cache
 export function resetGenreImageCache(): void {
-  usedMovieIds.clear();
+  // No-op: cache is no longer used
+}
+
+// Convert genre name to URL-friendly format (lowercase, replace spaces with hyphens)
+export function genreToSlug(genre: string): string {
+  return genre.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+}
+
+// Convert URL slug back to genre name (capitalize first letter of each word)
+export function slugToGenre(slug: string): string {
+  return slug
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
+// Find genre by slug (case-insensitive, handles variations)
+export function findGenreBySlug(slug: string): string | null {
+  if (!slug || typeof slug !== 'string') {
+    return null;
+  }
+  
+  const allGenres = getAllGenres();
+  // Normalize the slug: lowercase, trim, replace spaces with hyphens
+  const normalizedSlug = slug.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+  
+  // First try exact match with genreToSlug
+  for (const genre of allGenres) {
+    const genreSlug = genreToSlug(genre);
+    if (genreSlug === normalizedSlug) {
+      return genre;
+    }
+  }
+  
+  // Try direct lowercase comparison (for simple genres like "action")
+  const directMatch = normalizedSlug.replace(/-/g, ' ');
+  for (const genre of allGenres) {
+    if (genre.toLowerCase().replace(/\s+/g, '-') === normalizedSlug) {
+      return genre;
+    }
+  }
+  
+  // Try matching without hyphens (e.g., "sciencefiction" matches "Science Fiction")
+  const slugWithoutHyphens = normalizedSlug.replace(/-/g, '');
+  for (const genre of allGenres) {
+    const genreWithoutSpaces = genre.toLowerCase().replace(/\s+/g, '');
+    if (genreWithoutSpaces === slugWithoutHyphens) {
+      return genre;
+    }
+  }
+  
+  return null;
+}
+
+// Fetch movies from OMDB API by genre
+export async function fetchMoviesFromOMDBByGenre(genre: string): Promise<Movie[]> {
+  const OMDB_API_KEY = process.env.OMDB_API_KEY || '';
+
+  if (!OMDB_API_KEY) {
+    console.warn('OMDB_API_KEY not set, cannot fetch from OMDB');
+    return [];
+  }
+
+  const movies: Movie[] = [];
+  
+  // Common search terms for each genre to find relevant movies
+  const genreSearchTerms: Record<string, string[]> = {
+    'drama': ['drama', 'emotional', 'serious'],
+    'action': ['action', 'thriller', 'adventure'],
+    'comedy': ['comedy', 'funny', 'humor'],
+    'horror': ['horror', 'scary', 'thriller'],
+    'romance': ['romance', 'love', 'romantic'],
+    'sci-fi': ['sci-fi', 'science fiction', 'space'],
+    'science fiction': ['sci-fi', 'science fiction', 'space'],
+    'thriller': ['thriller', 'suspense', 'mystery'],
+    'fantasy': ['fantasy', 'magic', 'wizard'],
+    'animation': ['animation', 'animated', 'cartoon'],
+    'crime': ['crime', 'gangster', 'mafia'],
+    'documentary': ['documentary', 'documentary film'],
+    'family': ['family', 'kids', 'children'],
+    'mystery': ['mystery', 'detective', 'investigation'],
+    'war': ['war', 'military', 'soldier'],
+    'western': ['western', 'cowboy', 'frontier'],
+    'musical': ['musical', 'music', 'song'],
+    'sport': ['sport', 'sports', 'athlete'],
+    'biography': ['biography', 'biographical', 'true story'],
+    'history': ['history', 'historical', 'period'],
+    'adventure': ['adventure', 'journey', 'quest'],
+  };
+
+  // Get search terms for this genre (default to genre name if not found)
+  const searchTerms = genreSearchTerms[genre.toLowerCase()] || [genre.toLowerCase()];
+  
+  // Search for movies using the first search term
+  const searchTerm = searchTerms[0];
+  
+  try {
+    // Use OMDB search endpoint
+    const searchUrl = `https://www.omdbapi.com/?s=${encodeURIComponent(searchTerm)}&type=movie&apikey=${OMDB_API_KEY}&page=1`;
+    const searchResponse = await fetch(searchUrl);
+    const searchData = await searchResponse.json();
+
+    if (searchData.Response === 'True' && searchData.Search) {
+      // Limit to first 20 results to avoid too many API calls
+      const searchResults = searchData.Search.slice(0, 20);
+      
+      // Fetch detailed info for each movie
+      for (const result of searchResults) {
+        try {
+          // Add delay to respect rate limits
+          await new Promise(resolve => setTimeout(resolve, 200));
+          
+          const detailUrl = `https://www.omdbapi.com/?i=${result.imdbID}&apikey=${OMDB_API_KEY}`;
+          const detailResponse = await fetch(detailUrl);
+          const detailData = await detailResponse.json();
+
+          if (detailData.Response === 'True') {
+            // Check if movie matches the genre
+            const movieGenres = detailData.Genre?.split(',').map((g: string) => g.trim()) || [];
+            const genreLower = genre.toLowerCase();
+            const matchesGenre = movieGenres.some((g: string) => 
+              g.toLowerCase() === genreLower || 
+              g.toLowerCase().includes(genreLower) ||
+              genreLower.includes(g.toLowerCase())
+            );
+
+            if (matchesGenre) {
+              // Map OMDB response to our Movie type
+              const year = detailData.Year ? parseInt(detailData.Year.split('–')[0]) : null;
+              const movie: Movie = {
+                id: parseInt(result.imdbID.replace('tt', '')) || Date.now() + Math.random(),
+                title: detailData.Title || result.Title,
+                tagline: '',
+                overview: detailData.Plot || '',
+                releaseDate: detailData.Released || detailData.Year || '',
+                popularity: 0,
+                voteAverage: detailData.imdbRating ? parseFloat(detailData.imdbRating) : 0,
+                voteCount: detailData.imdbVotes ? parseInt(detailData.imdbVotes.replace(/,/g, '')) : 0,
+                runtime: detailData.Runtime ? parseInt(detailData.Runtime.replace(' min', '')) : 0,
+                budget: 0,
+                revenue: 0,
+                originalLanguage: detailData.Language?.split(',')[0] || 'en',
+                status: 'Released',
+                genres: movieGenres,
+                keywords: [],
+                productionCompanies: detailData.Production?.split(',').map((p: string) => p.trim()) || [],
+                posterPath: detailData.Poster && detailData.Poster !== 'N/A' ? detailData.Poster : null,
+                backdropPath: detailData.Poster && detailData.Poster !== 'N/A' ? detailData.Poster : null,
+                cast: detailData.Actors?.split(',').slice(0, 5).map((actor: string) => ({
+                  name: actor.trim(),
+                  character: '',
+                  profilePath: null,
+                })) || [],
+                director: detailData.Director || null,
+                year: year,
+                decade: year ? Math.floor(year / 10) * 10 : null,
+              };
+              
+              movies.push(movie);
+              
+              // Limit to 12 movies per genre
+              if (movies.length >= 12) break;
+            }
+          }
+        } catch (error) {
+          console.error(`Error fetching details for ${result.imdbID}:`, error);
+          continue;
+        }
+      }
+    }
+  } catch (error) {
+    console.error(`Error searching OMDB for genre ${genre}:`, error);
+  }
+
+  return movies;
 }
 
