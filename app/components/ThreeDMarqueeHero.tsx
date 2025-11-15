@@ -1,6 +1,8 @@
 "use client";
 
 import { ThreeDMarquee } from "./ui/3d-marquee";
+import { LayoutTextFlip } from "./ui/layout-text-flip";
+import { motion } from "motion/react";
 import { getAllMovies, getPosterUrl } from "@/lib/movies";
 import { Movie } from "@/types/movie";
 
@@ -40,13 +42,13 @@ export default function ThreeDMarqueeHero({ stats }: ThreeDMarqueeHeroProps) {
 
   return (
     <div className="relative mx-auto my-10 flex min-h-[90vh] w-full max-w-7xl flex-col items-center justify-center overflow-hidden rounded-3xl px-6">
-      <h2 className="relative z-20 mx-auto max-w-4xl text-center text-2xl font-bold text-balance text-white md:text-4xl lg:text-6xl">
-        Discover Your Next{" "}
-        <span className="relative z-20 inline-block rounded-xl bg-[#ffc300]/40 px-4 py-1 text-white underline decoration-[#ffd60a] decoration-[6px] underline-offset-[16px] backdrop-blur-sm">
-          Favorite Movie
-        </span>{" "}
-        Experience
-      </h2>
+      <motion.div className="relative z-20 mx-4 my-4 flex flex-col items-center justify-center gap-4 text-center sm:mx-0 sm:mb-0 sm:flex-row">
+        <LayoutTextFlip
+          text="Discover Your Next "
+          words={["Favorite Movie", "Cinematic Gem", "Blockbuster Hit", "Classic Film", "Award Winner"]}
+          duration={3000}
+        />
+      </motion.div>
       <p className="relative z-20 mx-auto max-w-2xl py-8 text-center text-sm text-neutral-200 md:text-base">
         Explore our curated collection of {stats?.total.toLocaleString() || 'thousands'} movies from {stats?.years || 'various years'}. 
         From timeless classics to modern masterpieces, find your perfect watch.

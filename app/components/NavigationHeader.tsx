@@ -29,7 +29,7 @@ export default function NavigationHeader() {
           {/* Logo */}
           <Link href="/" className="text-2xl font-bold text-white hover:text-[#ffc300] transition-colors duration-300 flex items-center gap-2">
             <span className="bg-gradient-to-r from-[#ffc300] to-[#ffd60a] bg-clip-text text-transparent">
-              Movie Directory
+              
             </span>
           </Link>
 
