@@ -10,7 +10,7 @@ export default function Home() {
   // Get data
   const allMovies = getAllMovies();
   const allGenres = getAllGenres();
-  const topMovies = getTopRated(10);
+  const topMovies = getTopRated(18);
   const yearRange = getYearRange();
 
   // Calculate stats

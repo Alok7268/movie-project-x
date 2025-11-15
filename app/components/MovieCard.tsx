@@ -1,3 +1,5 @@
+"use client";
+
 import Image from 'next/image';
 import { Movie } from '@/types/movie';
 import { getPosterUrl } from '@/lib/movies';
@@ -7,42 +9,31 @@ interface MovieCardProps {
 }
 
 export default function MovieCard({ movie }: MovieCardProps) {
-  const hasPoster = movie.posterPath !== null;
-  const posterUrl = hasPoster ? getPosterUrl(movie.posterPath, 'w500') : '';
+  const posterUrl = getPosterUrl(movie.posterPath, 'w500');
   const year = movie.year || (movie.releaseDate ? new Date(movie.releaseDate).getFullYear() : null);
   const genres = movie.genres.slice(0, 2);
 
   return (
     <div className="group relative aspect-[2/3] rounded-lg overflow-hidden cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-2xl bg-[#33134a]">
       {/* Movie Poster or Placeholder */}
-      <div className="relative w-full h-full">
-        {hasPoster ? (
+      <div className="relative w-full h-full bg-[#1f2937]">
+        {posterUrl.endsWith('.svg') ? (
+          // Use regular img tag for SVG placeholder files
+          <img
+            src={posterUrl}
+            alt={movie.title}
+            className="w-full h-full object-contain"
+            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+          />
+        ) : (
           <Image
             src={posterUrl}
             alt={movie.title}
             fill
             className="object-cover"
             sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw"
+            unoptimized={posterUrl.startsWith('http')}
           />
-        ) : (
-          <div className="w-full h-full bg-gradient-to-br from-[#550b2c] to-[#231758] flex items-center justify-center">
-            <div className="text-center p-4">
-              <svg
-                className="w-16 h-16 mx-auto mb-2 text-[#65071e]"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"
-                />
-              </svg>
-              <p className="text-gray-200 text-xs line-clamp-2">{movie.title}</p>
-            </div>
-          </div>
         )}
         
         {/* Rating Badge */}

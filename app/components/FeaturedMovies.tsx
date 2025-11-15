@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Movie } from '@/types/movie';
-import MovieCard from './MovieCard';
+import MovieCard3D from './MovieCard3D';
 
 interface FeaturedMoviesProps {
   movies: Movie[];
@@ -11,11 +11,11 @@ export default function FeaturedMovies({ movies }: FeaturedMoviesProps) {
     <section className="py-16 px-6">
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
-        <div className="flex items-center justify-between mb-10">
+        <div className="flex items-center justify-center mb-10 relative">
           <h2 className="text-3xl md:text-4xl font-bold text-white">Top Rated Movies</h2>
           <Link
             href="/movies"
-            className="flex items-center gap-2 text-[#76030f] hover:text-[#65071e] font-semibold transition-colors duration-300 group"
+            className="absolute right-0 flex items-center gap-2 text-[#76030f] hover:text-[#65071e] font-semibold transition-colors duration-300 group"
           >
             View All
             <svg
@@ -35,9 +35,13 @@ export default function FeaturedMovies({ movies }: FeaturedMoviesProps) {
         </div>
 
         {/* Movies Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
-          {movies.map((movie) => (
-            <MovieCard key={movie.id} movie={movie} />
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4 items-stretch">
+          {movies.map((movie, index) => (
+            <MovieCard3D 
+              key={movie.id} 
+              movie={movie} 
+              priority={index < 6} // Prioritize first 6 images (above the fold)
+            />
           ))}
         </div>
       </div>

@@ -7,13 +7,35 @@ const movies = moviesData as Movie[];
 export const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p';
 
 export function getPosterUrl(posterPath: string | null, size: 'w200' | 'w500' | 'original' = 'w500') {
-  if (!posterPath) return '/placeholder-poster.jpg';
-  return `${TMDB_IMAGE_BASE}/${size}${posterPath}`;
+  if (!posterPath || posterPath.trim() === '') {
+    // Use local SVG placeholder
+    return '/no-poster.svg';
+  }
+  
+  // If posterPath is already a full URL (from OMDb or other sources), return it as-is
+  if (posterPath.startsWith('http://') || posterPath.startsWith('https://')) {
+    return posterPath;
+  }
+  
+  // Otherwise, treat it as a TMDB path and construct the URL
+  const normalizedPath = posterPath.startsWith('/') ? posterPath : `/${posterPath}`;
+  return `${TMDB_IMAGE_BASE}/${size}${normalizedPath}`;
 }
 
 export function getBackdropUrl(backdropPath: string | null, size: 'w780' | 'w1280' | 'original' = 'w1280') {
-  if (!backdropPath) return '/placeholder-backdrop.jpg';
-  return `${TMDB_IMAGE_BASE}/${size}${backdropPath}`;
+  if (!backdropPath || backdropPath.trim() === '') {
+    // Use local SVG placeholder
+    return '/no-backdrop.svg';
+  }
+  
+  // If backdropPath is already a full URL (from OMDb or other sources), return it as-is
+  if (backdropPath.startsWith('http://') || backdropPath.startsWith('https://')) {
+    return backdropPath;
+  }
+  
+  // Otherwise, treat it as a TMDB path and construct the URL
+  const normalizedPath = backdropPath.startsWith('/') ? backdropPath : `/${backdropPath}`;
+  return `${TMDB_IMAGE_BASE}/${size}${normalizedPath}`;
 }
 
 export function getAllMovies(): Movie[] {

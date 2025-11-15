@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const csv = require('csv-parser');
+const https = require('https');
 
 // Path to your CSV files
 const MOVIES_CSV = path.join(__dirname, '../../archive/tmdb_5000_movies.csv');
@@ -9,7 +10,56 @@ const CREDITS_CSV = path.join(__dirname, '../../archive/tmdb_5000_credits.csv');
 // Output path
 const OUTPUT_PATH = path.join(__dirname, '../public/data/movies.json');
 
+// TMDB API configuration (optional - set via environment variable)
+const TMDB_API_KEY = process.env.TMDB_API_KEY || '';
+const TMDB_API_BASE = 'https://api.themoviedb.org/3';
+
 console.log('🎬 Starting TMDB data conversion...\n');
+if (!TMDB_API_KEY) {
+  console.log('⚠️  No TMDB API key found. Set TMDB_API_KEY environment variable to fetch poster images.');
+  console.log('   Movies will be processed without poster paths (placeholder images will be used).\n');
+}
+
+// Helper function to fetch movie details from TMDB API
+function fetchMovieDetails(movieId) {
+  return new Promise((resolve, reject) => {
+    if (!TMDB_API_KEY) {
+      resolve(null);
+      return;
+    }
+
+    const url = `${TMDB_API_BASE}/movie/${movieId}?api_key=${TMDB_API_KEY}`;
+    
+    https.get(url, (res) => {
+      let data = '';
+      
+      res.on('data', (chunk) => {
+        data += chunk;
+      });
+      
+      res.on('end', () => {
+        try {
+          if (res.statusCode === 200) {
+            const movieData = JSON.parse(data);
+            resolve({
+              posterPath: movieData.poster_path || null,
+              backdropPath: movieData.backdrop_path || null
+            });
+          } else {
+            console.warn(`   ⚠️  Failed to fetch movie ${movieId}: ${res.statusCode}`);
+            resolve(null);
+          }
+        } catch (error) {
+          console.warn(`   ⚠️  Error parsing response for movie ${movieId}:`, error.message);
+          resolve(null);
+        }
+      });
+    }).on('error', (error) => {
+      console.warn(`   ⚠️  Error fetching movie ${movieId}:`, error.message);
+      resolve(null);
+    });
+  });
+}
 
 // Step 1: Read credits data first
 const creditsMap = new Map();
@@ -107,6 +157,7 @@ function readMovies() {
           const credits = creditsMap.get(movieId) || { cast: [], director: null };
 
           // Create movie object
+          // Note: poster_path and backdrop_path are not in the CSV, will be fetched from API if available
           const movie = {
             id: movieId,
             title: row.title || 'Untitled',
@@ -127,9 +178,9 @@ function readMovies() {
             keywords: keywords,
             productionCompanies: productionCompanies,
             
-            // Images (TMDB paths)
-            posterPath: row.poster_path || null,
-            backdropPath: row.backdrop_path || null,
+            // Images (will be fetched from API if available, otherwise null)
+            posterPath: null,
+            backdropPath: null,
             
             // Credits
             cast: credits.cast,
@@ -154,6 +205,66 @@ function readMovies() {
   });
 }
 
+// Step 2.5: Fetch poster/backdrop paths from TMDB API
+async function fetchImagePaths(movies) {
+  if (!TMDB_API_KEY) {
+    console.log('⏭️  Skipping image fetch (no API key provided)\n');
+    console.log('📝 To fetch real movie posters:');
+    console.log('   1. Get a free API key from: https://www.themoviedb.org/settings/api');
+    console.log('   2. Run: TMDB_API_KEY=your_key_here node scripts/convert-csv-to-json.js\n');
+    return movies;
+  }
+
+  console.log('🖼️  Fetching poster and backdrop paths from TMDB API...');
+  console.log(`   Processing ${movies.length} movies (this will take ~${Math.ceil(movies.length * 0.25 / 60)} minutes)...\n`);
+  
+  const updatedMovies = [];
+  let fetched = 0;
+  let failed = 0;
+  const startTime = Date.now();
+
+  for (let i = 0; i < movies.length; i++) {
+    const movie = movies[i];
+    
+    // Show progress every 5 movies with time estimate
+    if (i % 5 === 0 && i > 0) {
+      const elapsed = (Date.now() - startTime) / 1000;
+      const rate = i / elapsed;
+      const remaining = Math.ceil((movies.length - i) / rate);
+      const mins = Math.floor(remaining / 60);
+      const secs = remaining % 60;
+      console.log(`   Progress: ${i}/${movies.length} (${fetched} fetched, ${failed} failed) - ~${mins}m ${secs}s remaining`);
+    }
+
+    try {
+      const imageData = await fetchMovieDetails(movie.id);
+      
+      if (imageData && imageData.posterPath) {
+        movie.posterPath = imageData.posterPath;
+        movie.backdropPath = imageData.backdropPath;
+        fetched++;
+      } else {
+        failed++;
+      }
+      
+      // Rate limiting: wait 250ms between requests (40 requests per 10 seconds)
+      // TMDB allows 40 requests per 10 seconds
+      if (i < movies.length - 1) {
+        await new Promise(resolve => setTimeout(resolve, 250));
+      }
+    } catch (error) {
+      console.warn(`   ⚠️  Error fetching images for "${movie.title}" (ID: ${movie.id}):`, error.message);
+      failed++;
+    }
+
+    updatedMovies.push(movie);
+  }
+
+  const totalTime = ((Date.now() - startTime) / 1000).toFixed(1);
+  console.log(`\n✅ Image fetch complete in ${totalTime}s: ${fetched} successful, ${failed} failed\n`);
+  return updatedMovies;
+}
+
 // Step 3: Filter and sort to get top 250
 function processMovies(movies) {
   console.log('🔍 Filtering and sorting movies...');
@@ -168,6 +279,8 @@ function processMovies(movies) {
   });
   
   // Filter: only movies with valid data (relaxed criteria)
+  // Note: Removed posterPath requirement since it may not be available without API key
+  // posterPath is optional - placeholder images will be used if missing
   const filtered = movies.filter(movie => {
     return (
       movie.voteCount > 10 && // At least 10 votes (relaxed)
@@ -248,13 +361,20 @@ async function main() {
     // Read movies and merge with credits
     const movies = await readMovies();
     
+    // Fetch image paths from TMDB API if API key is available
+    const moviesWithImages = await fetchImagePaths(movies);
+    
     // Process and filter
-    const top250 = processMovies(movies);
+    const top250 = processMovies(moviesWithImages);
     
     // Save to JSON
     saveToJson(top250);
     
     console.log('\n✨ Conversion complete! Your data is ready to use.\n');
+    if (!TMDB_API_KEY) {
+      console.log('💡 Tip: To fetch poster images, set TMDB_API_KEY environment variable and run again.');
+      console.log('   Get your API key from: https://www.themoviedb.org/settings/api\n');
+    }
   } catch (error) {
     console.error('❌ Error during conversion:', error);
     process.exit(1);
