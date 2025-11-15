@@ -4,6 +4,7 @@ import FeaturedMovies from './components/FeaturedMovies';
 import GenreGrid from './components/GenreGrid';
 import NavigationHeader from './components/NavigationHeader';
 import Footer from './components/Footer';
+import SparklesBackground from './components/SparklesBackground';
 
 export default function Home() {
   // Get data
@@ -20,12 +21,18 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-950">
-      <NavigationHeader />
-      <HeroSection stats={stats} />
-      <FeaturedMovies movies={topMovies} />
-      <GenreGrid genres={allGenres} />
-      <Footer />
+    <div className="min-h-screen relative">
+      {/* Sparkles Background */}
+      <SparklesBackground />
+      
+      {/* Content Layer */}
+      <div className="relative z-10">
+        <NavigationHeader />
+        <HeroSection stats={stats} />
+        <FeaturedMovies movies={topMovies} />
+        <GenreGrid genres={allGenres} />
+        <Footer />
+      </div>
     </div>
   );
 }

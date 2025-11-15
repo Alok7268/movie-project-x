@@ -13,7 +13,7 @@ export default function GenreGrid({ genres, onGenreClick }: GenreGridProps) {
   };
 
   return (
-    <section className="py-16 px-6 bg-gray-950">
+    <section className="py-16 px-6">
       <div className="max-w-7xl mx-auto">
         {/* Section Heading */}
         <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-12">
@@ -26,10 +26,10 @@ export default function GenreGrid({ genres, onGenreClick }: GenreGridProps) {
             <button
               key={genre}
               onClick={() => handleGenreClick(genre)}
-              className="group relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-8 md:p-12 border-2 border-gray-700 hover:border-purple-500 transition-all duration-300 hover:scale-105 overflow-hidden"
+              className="group relative bg-gradient-to-br from-[#33134a] to-[#231758] rounded-xl p-8 md:p-12 border-2 border-[#440f3b] hover:border-[#76030f] transition-all duration-300 hover:scale-105 overflow-hidden"
             >
               {/* Gradient Overlay on Hover */}
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/0 to-pink-500/0 group-hover:from-purple-500/20 group-hover:to-pink-500/20 transition-all duration-300"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-[#76030f]/0 to-[#550b2c]/0 group-hover:from-[#76030f]/30 group-hover:to-[#550b2c]/30 transition-all duration-300"></div>
               
               {/* Genre Name */}
               <span className="relative z-10 text-white text-lg md:text-xl font-bold text-center block">
