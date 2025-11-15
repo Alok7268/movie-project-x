@@ -102,6 +102,190 @@ export function searchMovies(query: string): Movie[] {
   );
 }
 
+// Get movies featuring a specific actor
+export function getMoviesByActor(actorName: string): Movie[] {
+  if (!actorName || typeof actorName !== 'string') {
+    return [];
+  }
+  
+  const normalizedActor = actorName.trim().toLowerCase();
+  return movies.filter(m => 
+    m.cast.some(c => c.name.toLowerCase().includes(normalizedActor))
+  );
+}
+
+// Get movies by a specific director
+export function getMoviesByDirector(directorName: string): Movie[] {
+  if (!directorName || typeof directorName !== 'string') {
+    return [];
+  }
+  
+  const normalizedDirector = directorName.trim().toLowerCase();
+  return movies.filter(m => 
+    m.director?.toLowerCase().includes(normalizedDirector)
+  );
+}
+
+// Get movies by multiple genres (AND condition - movie must have all genres)
+export function getMoviesByMultipleGenres(genreNames: string[]): Movie[] {
+  if (!genreNames || genreNames.length === 0) {
+    return [];
+  }
+  
+  const normalizedGenres = genreNames.map(g => g.trim().toLowerCase());
+  return movies.filter(m => 
+    normalizedGenres.every(genre => 
+      m.genres.some(g => g.trim().toLowerCase() === genre)
+    )
+  );
+}
+
+// Advanced filtering with multiple criteria
+export interface MovieFilterOptions {
+  genres?: string[];
+  actors?: string[];
+  directors?: string[];
+  years?: number[];
+  decades?: number[];
+  minRating?: number;
+  minVoteCount?: number;
+}
+
+export function filterMovies(options: MovieFilterOptions): Movie[] {
+  let filtered = [...movies];
+  
+  // Filter by genres (AND condition - movie must have all specified genres)
+  if (options.genres && options.genres.length > 0) {
+    const normalizedGenres = options.genres.map(g => g.trim().toLowerCase());
+    filtered = filtered.filter(m => 
+      normalizedGenres.every(genre => 
+        m.genres.some(g => g.trim().toLowerCase() === genre)
+      )
+    );
+  }
+  
+  // Filter by actors (AND condition - movie must feature all specified actors)
+  if (options.actors && options.actors.length > 0) {
+    const normalizedActors = options.actors.map(a => a.trim().toLowerCase());
+    filtered = filtered.filter(m => 
+      normalizedActors.every(actor => 
+        m.cast.some(c => c.name.toLowerCase().includes(actor))
+      )
+    );
+  }
+  
+  // Filter by directors (OR condition - movie can be directed by any of the specified directors)
+  if (options.directors && options.directors.length > 0) {
+    const normalizedDirectors = options.directors.map(d => d.trim().toLowerCase());
+    filtered = filtered.filter(m => 
+      m.director && normalizedDirectors.some(director => 
+        m.director!.toLowerCase().includes(director)
+      )
+    );
+  }
+  
+  // Filter by years
+  if (options.years && options.years.length > 0) {
+    filtered = filtered.filter(m => m.year && options.years!.includes(m.year));
+  }
+  
+  // Filter by decades
+  if (options.decades && options.decades.length > 0) {
+    filtered = filtered.filter(m => m.decade && options.decades!.includes(m.decade));
+  }
+  
+  // Filter by minimum rating
+  if (options.minRating !== undefined) {
+    filtered = filtered.filter(m => m.voteAverage >= options.minRating!);
+  }
+  
+  // Filter by minimum vote count
+  if (options.minVoteCount !== undefined) {
+    filtered = filtered.filter(m => m.voteCount >= options.minVoteCount!);
+  }
+  
+  return filtered;
+}
+
+// Get all unique actors from the dataset
+export function getAllActors(): string[] {
+  const actorSet = new Set<string>();
+  movies.forEach(m => {
+    m.cast.forEach(c => {
+      if (c.name && c.name.trim()) {
+        actorSet.add(c.name.trim());
+      }
+    });
+  });
+  return Array.from(actorSet).sort();
+}
+
+// Get all unique directors from the dataset
+export function getAllDirectors(): string[] {
+  const directorSet = new Set<string>();
+  movies.forEach(m => {
+    if (m.director && m.director.trim()) {
+      directorSet.add(m.director.trim());
+    }
+  });
+  return Array.from(directorSet).sort();
+}
+
+// Get popular actors (actors with most movies, sorted by movie count)
+export function getPopularActors(limit: number = 20): string[] {
+  const actorCounts = new Map<string, number>();
+  
+  movies.forEach(m => {
+    m.cast.forEach(c => {
+      if (c.name && c.name.trim()) {
+        const actorName = c.name.trim();
+        actorCounts.set(actorName, (actorCounts.get(actorName) || 0) + 1);
+      }
+    });
+  });
+  
+  return Array.from(actorCounts.entries())
+    .sort((a, b) => b[1] - a[1]) // Sort by count descending
+    .slice(0, limit)
+    .map(([name]) => name);
+}
+
+// Get popular directors (directors with most movies, sorted by movie count)
+export function getPopularDirectors(limit: number = 20): string[] {
+  const directorCounts = new Map<string, number>();
+  
+  movies.forEach(m => {
+    if (m.director && m.director.trim()) {
+      const directorName = m.director.trim();
+      directorCounts.set(directorName, (directorCounts.get(directorName) || 0) + 1);
+    }
+  });
+  
+  return Array.from(directorCounts.entries())
+    .sort((a, b) => b[1] - a[1]) // Sort by count descending
+    .slice(0, limit)
+    .map(([name]) => name);
+}
+
+// Get popular genres (genres with most movies, sorted by movie count)
+export function getPopularGenres(limit: number = 20): string[] {
+  const genreCounts = new Map<string, number>();
+  
+  movies.forEach(m => {
+    m.genres.forEach(genre => {
+      if (genre && genre.trim()) {
+        const genreName = genre.trim();
+        genreCounts.set(genreName, (genreCounts.get(genreName) || 0) + 1);
+      }
+    });
+  });
+  
+  return Array.from(genreCounts.entries())
+    .sort((a, b) => b[1] - a[1]) // Sort by count descending
+    .slice(0, limit)
+    .map(([name]) => name);
+}
+
 // Simple hash function to generate consistent index for each genre
 function hashString(str: string): number {
   let hash = 0;
@@ -320,6 +504,14 @@ export async function fetchMoviesFromOMDBByGenre(genre: string): Promise<Movie[]
               if (matchesGenre) {
                 // Map OMDB response to our Movie type
                 const year = detailData.Year ? parseInt(detailData.Year.split('–')[0]) : null;
+                
+                // Safely parse voteAverage, handling "N/A" and invalid values
+                let voteAverage = 0;
+                if (detailData.imdbRating && detailData.imdbRating !== 'N/A') {
+                  const parsed = parseFloat(detailData.imdbRating);
+                  voteAverage = !isNaN(parsed) && isFinite(parsed) ? parsed : 0;
+                }
+                
                 const movie: Movie = {
                   id: parseInt(result.imdbID.replace('tt', '')) || Date.now() + Math.random(),
                   title: detailData.Title || result.Title,
@@ -327,7 +519,7 @@ export async function fetchMoviesFromOMDBByGenre(genre: string): Promise<Movie[]
                   overview: detailData.Plot || '',
                   releaseDate: detailData.Released || detailData.Year || '',
                   popularity: 0,
-                  voteAverage: detailData.imdbRating ? parseFloat(detailData.imdbRating) : 0,
+                  voteAverage: voteAverage,
                   voteCount: detailData.imdbVotes ? parseInt(detailData.imdbVotes.replace(/,/g, '')) : 0,
                   runtime: detailData.Runtime ? parseInt(detailData.Runtime.replace(' min', '')) : 0,
                   budget: 0,
@@ -368,6 +560,97 @@ export async function fetchMoviesFromOMDBByGenre(genre: string): Promise<Movie[]
       console.error(`Error searching OMDB for genre ${genre} with term ${searchTerm}:`, error);
       continue; // Try next search term
     }
+  }
+
+  return movies;
+}
+
+// Search movies from OMDB API by query string
+export async function searchMoviesFromOMDB(query: string, limit: number = 20): Promise<Movie[]> {
+  const OMDB_API_KEY = process.env.OMDB_API_KEY || '';
+
+  if (!OMDB_API_KEY) {
+    console.warn('OMDB_API_KEY not set, cannot fetch from OMDB');
+    return [];
+  }
+
+  if (!query || query.trim() === '') {
+    return [];
+  }
+
+  const movies: Movie[] = [];
+
+  try {
+    // Use OMDB search endpoint
+    const searchUrl = `https://www.omdbapi.com/?s=${encodeURIComponent(query.trim())}&type=movie&apikey=${OMDB_API_KEY}&page=1`;
+    const searchResponse = await fetch(searchUrl);
+    const searchData = await searchResponse.json();
+
+    if (searchData.Response === 'True' && searchData.Search) {
+      // Limit results
+      const searchResults = searchData.Search.slice(0, limit);
+      
+      // Fetch detailed info for each movie
+      for (const result of searchResults) {
+        try {
+          // Add delay to respect rate limits
+          await new Promise(resolve => setTimeout(resolve, 200));
+          
+          const detailUrl = `https://www.omdbapi.com/?i=${result.imdbID}&apikey=${OMDB_API_KEY}`;
+          const detailResponse = await fetch(detailUrl);
+          const detailData = await detailResponse.json();
+
+          if (detailData.Response === 'True') {
+            // Map OMDB response to our Movie type
+            const year = detailData.Year ? parseInt(detailData.Year.split('–')[0]) : null;
+            const movieGenres = detailData.Genre?.split(',').map((g: string) => g.trim()) || [];
+            
+            // Safely parse voteAverage, handling "N/A" and invalid values
+            let voteAverage = 0;
+            if (detailData.imdbRating && detailData.imdbRating !== 'N/A') {
+              const parsed = parseFloat(detailData.imdbRating);
+              voteAverage = !isNaN(parsed) && isFinite(parsed) ? parsed : 0;
+            }
+
+            const movie: Movie = {
+              id: parseInt(result.imdbID.replace('tt', '')) || Date.now() + Math.random(),
+              title: detailData.Title || result.Title,
+              tagline: '',
+              overview: detailData.Plot || '',
+              releaseDate: detailData.Released || detailData.Year || '',
+              popularity: 0,
+              voteAverage: voteAverage,
+              voteCount: detailData.imdbVotes ? parseInt(detailData.imdbVotes.replace(/,/g, '')) : 0,
+              runtime: detailData.Runtime ? parseInt(detailData.Runtime.replace(' min', '')) : 0,
+              budget: 0,
+              revenue: 0,
+              originalLanguage: detailData.Language?.split(',')[0] || 'en',
+              status: 'Released',
+              genres: movieGenres,
+              keywords: [],
+              productionCompanies: detailData.Production?.split(',').map((p: string) => p.trim()) || [],
+              posterPath: detailData.Poster && detailData.Poster !== 'N/A' ? detailData.Poster : null,
+              backdropPath: detailData.Poster && detailData.Poster !== 'N/A' ? detailData.Poster : null,
+              cast: detailData.Actors?.split(',').slice(0, 5).map((actor: string) => ({
+                name: actor.trim(),
+                character: '',
+                profilePath: null,
+              })) || [],
+              director: detailData.Director || null,
+              year: year,
+              decade: year ? Math.floor(year / 10) * 10 : null,
+            };
+            
+            movies.push(movie);
+          }
+        } catch (error) {
+          console.error(`Error fetching details for ${result.imdbID}:`, error);
+          continue;
+        }
+      }
+    }
+  } catch (error) {
+    console.error(`Error searching OMDB for query "${query}":`, error);
   }
 
   return movies;

@@ -1,4 +1,6 @@
-import Link from 'next/link';
+'use client';
+
+import { useState, useMemo } from 'react';
 import { Movie } from '@/types/movie';
 import MovieCard3D from './MovieCard3D';
 
@@ -9,12 +11,79 @@ interface FeaturedMoviesProps {
   viewAllLink?: string;
 }
 
+type SortOption = 
+  | 'rating-desc'
+  | 'rating-asc'
+  | 'popularity-desc'
+  | 'popularity-asc'
+  | 'year-desc'
+  | 'year-asc'
+  | 'title-asc'
+  | 'title-desc'
+  | 'vote-count-desc'
+  | 'vote-count-asc';
+
+const sortOptions: { value: SortOption; label: string }[] = [
+  { value: 'rating-desc', label: 'Highest Rated' },
+  { value: 'rating-asc', label: 'Lowest Rated' },
+  { value: 'popularity-desc', label: 'Most Popular' },
+  { value: 'popularity-asc', label: 'Least Popular' },
+  { value: 'year-desc', label: 'Newest First' },
+  { value: 'year-asc', label: 'Oldest First' },
+  { value: 'title-asc', label: 'Title (A-Z)' },
+  { value: 'title-desc', label: 'Title (Z-A)' },
+  { value: 'vote-count-desc', label: 'Most Votes' },
+  { value: 'vote-count-asc', label: 'Least Votes' },
+];
+
 export default function FeaturedMovies({ 
   movies, 
   title = 'Top Rated Movies',
   showViewAll = true,
   viewAllLink = '/movies'
 }: FeaturedMoviesProps) {
+  const [sortBy, setSortBy] = useState<SortOption>('rating-desc');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const sortedMovies = useMemo(() => {
+    const moviesCopy = [...movies];
+    
+    switch (sortBy) {
+      case 'rating-desc':
+        return moviesCopy.sort((a, b) => b.voteAverage - a.voteAverage);
+      case 'rating-asc':
+        return moviesCopy.sort((a, b) => a.voteAverage - b.voteAverage);
+      case 'popularity-desc':
+        return moviesCopy.sort((a, b) => b.popularity - a.popularity);
+      case 'popularity-asc':
+        return moviesCopy.sort((a, b) => a.popularity - b.popularity);
+      case 'year-desc':
+        return moviesCopy.sort((a, b) => {
+          const yearA = a.year ?? 0;
+          const yearB = b.year ?? 0;
+          return yearB - yearA;
+        });
+      case 'year-asc':
+        return moviesCopy.sort((a, b) => {
+          const yearA = a.year ?? 0;
+          const yearB = b.year ?? 0;
+          return yearA - yearB;
+        });
+      case 'title-asc':
+        return moviesCopy.sort((a, b) => a.title.localeCompare(b.title));
+      case 'title-desc':
+        return moviesCopy.sort((a, b) => b.title.localeCompare(a.title));
+      case 'vote-count-desc':
+        return moviesCopy.sort((a, b) => b.voteCount - a.voteCount);
+      case 'vote-count-asc':
+        return moviesCopy.sort((a, b) => a.voteCount - b.voteCount);
+      default:
+        return moviesCopy;
+    }
+  }, [movies, sortBy]);
+
+  const selectedOption = sortOptions.find(opt => opt.value === sortBy) || sortOptions[0];
+
   return (
     <section className="py-16 px-6">
       <div className="max-w-7xl mx-auto">
@@ -25,32 +94,65 @@ export default function FeaturedMovies({
             <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-white to-[#ffc300] bg-clip-text text-transparent">{title}</h2>
           )}
           {showViewAll && (
-            <Link
-              href={viewAllLink}
-              className="absolute right-0 flex items-center gap-2 text-[#ffc300] hover:text-[#ffd60a] font-semibold transition-colors duration-300 group px-4 py-2 rounded-lg hover:bg-[#001d3d]/50 border border-[#003566]/50 hover:border-[#ffc300]/50"
-            >
-              View All
-              <svg
-                className="w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-300"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M17 8l4 4m0 0l-4 4m4-4H3"
-                />
-              </svg>
-            </Link>
+            <div className="absolute right-0">
+              <div className="relative">
+                <button
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className="flex items-center gap-2 text-[#ffc300] hover:text-[#ffd60a] font-semibold transition-colors duration-300 px-4 py-2 rounded-lg hover:bg-[#001d3d]/50 border border-[#003566]/50 hover:border-[#ffc300]/50"
+                >
+                  {selectedOption.label}
+                  <svg
+                    className={`w-5 h-5 transform transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+                
+                {isDropdownOpen && (
+                  <>
+                    <div 
+                      className="fixed inset-0 z-10" 
+                      onClick={() => setIsDropdownOpen(false)}
+                    />
+                    <div className="absolute right-0 mt-2 w-56 rounded-lg bg-[#001d3d]/95 backdrop-blur-md border border-[#003566]/50 shadow-xl z-20 overflow-hidden">
+                      <div className="py-1">
+                        {sortOptions.map((option) => (
+                          <button
+                            key={option.value}
+                            onClick={() => {
+                              setSortBy(option.value);
+                              setIsDropdownOpen(false);
+                            }}
+                            className={`w-full text-left px-4 py-2 text-sm transition-colors duration-200 ${
+                              sortBy === option.value
+                                ? 'bg-[#ffc300]/20 text-[#ffc300] font-semibold'
+                                : 'text-gray-300 hover:bg-[#003566]/50 hover:text-white'
+                            }`}
+                          >
+                            {option.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
           )}
         </div>
         )}
 
         {/* Movies Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4 items-stretch">
-          {movies.map((movie, index) => (
+          {sortedMovies.map((movie, index) => (
             <MovieCard3D 
               key={movie.id} 
               movie={movie} 
