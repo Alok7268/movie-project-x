@@ -55,7 +55,7 @@ export default function GenreGrid({ genres, onGenreClick }: GenreGridProps) {
           </div>
 
           {/* Row 3 - Moving Right, Slow */}
-          <div className="h-[180px] rounded-md flex flex-col antialiased bg-transparent items-center justify-center relative overflow-hidden">
+          <div className="h-[180px] rounded-md flex flex-col antialiased bg-transparent items-center justify-center relative overflow-hidden z-30">
             <InfiniteMovingCards
               items={row3Genres}
               direction="right"

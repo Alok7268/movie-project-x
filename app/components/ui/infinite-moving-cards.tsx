@@ -53,7 +53,22 @@ export const InfiniteMovingCards = ({
       // Clone all items for seamless loop
       const scrollerContent = Array.from(scrollerRef.current.children);
       scrollerContent.forEach((item) => {
-        const duplicatedItem = item.cloneNode(true);
+        const duplicatedItem = item.cloneNode(true) as HTMLLIElement;
+        // Re-attach click handler to cloned elements
+        if (duplicatedItem && onItemClick) {
+          const originalItem = item as HTMLLIElement;
+          const itemIdx = originalItem.getAttribute('data-item-idx');
+          if (itemIdx !== null) {
+            const idx = parseInt(itemIdx, 10);
+            if (!isNaN(idx) && idx >= 0 && idx < items.length) {
+              const itemData = items[idx];
+              duplicatedItem.addEventListener('click', (e) => {
+                e.stopPropagation();
+                onItemClick(itemData);
+              });
+            }
+          }
+        }
         if (scrollerRef.current) {
           scrollerRef.current.appendChild(duplicatedItem);
         }
@@ -100,22 +115,26 @@ export const InfiniteMovingCards = ({
       >
         {items.map((item, idx) => (
           <li
-            className="relative w-[160px] h-[160px] min-w-[160px] max-w-[160px] min-h-[160px] max-h-[160px] shrink-0 flex-shrink-0 flex-grow-0 rounded-2xl border border-[#003566]/50 cursor-pointer hover:scale-105 hover:border-[#ffc300]/50 hover:shadow-lg hover:shadow-[#ffc300]/20 transition-all duration-300 flex items-center justify-center overflow-hidden box-border bg-gradient-to-br from-[#001d3d]/30 to-[#000814]/30 backdrop-blur-sm"
+            className="relative w-[160px] h-[160px] min-w-[160px] max-w-[160px] min-h-[160px] max-h-[160px] shrink-0 flex-shrink-0 flex-grow-0 rounded-2xl border border-[#003566]/50 cursor-pointer hover:scale-105 hover:border-[#ffc300]/50 hover:shadow-lg hover:shadow-[#ffc300]/20 transition-all duration-300 flex items-center justify-center overflow-hidden box-border bg-gradient-to-br from-[#001d3d]/30 to-[#000814]/30 backdrop-blur-sm z-30"
             key={`${item.name}-${idx}`}
-            onClick={() => onItemClick?.(item)}
+            data-item-idx={idx}
+            onClick={(e) => {
+              e.stopPropagation();
+              onItemClick?.(item);
+            }}
             style={{ flexBasis: '160px' }}
           >
             {/* Background Image */}
             <div 
-              className="absolute inset-0 bg-cover bg-center rounded-2xl"
+              className="absolute inset-0 bg-cover bg-center rounded-2xl pointer-events-none"
               style={{ backgroundImage: `url(${item.image || '/no-poster.svg'})` }}
             >
               {/* Dark overlay for better text readability */}
-              <div className="absolute inset-0 bg-gradient-to-br from-[#000814]/80 via-[#001d3d]/70 to-[#000814]/80 rounded-2xl"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-[#000814]/80 via-[#001d3d]/70 to-[#000814]/80 rounded-2xl pointer-events-none"></div>
             </div>
             
             {/* Genre Name */}
-            <div className="text-center w-full px-3 overflow-hidden relative z-10">
+            <div className="text-center w-full px-3 overflow-hidden relative z-10 pointer-events-none">
               <span className="relative z-20 text-sm md:text-base font-bold text-white group-hover:text-[#ffc300] transition-colors duration-300 drop-shadow-lg break-words hyphens-auto" style={{ 
                 display: '-webkit-box',
                 WebkitLineClamp: 2,

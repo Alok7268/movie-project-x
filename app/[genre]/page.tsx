@@ -34,13 +34,15 @@ export default async function GenrePage({ params }: GenrePageProps) {
     genreName = slugToGenre(genreSlug);
   }
 
-  // Get movies for this genre from local data
+  // Get movies for this genre from local data (now case-insensitive)
   let genreMovies = getMoviesByGenre(genreName);
 
   // If no local movies found, try fetching from OMDB API
   if (genreMovies.length === 0) {
     try {
+      console.log(`No local movies found for "${genreName}", fetching from OMDB...`);
       genreMovies = await fetchMoviesFromOMDBByGenre(genreName);
+      console.log(`Found ${genreMovies.length} movies from OMDB for "${genreName}"`);
     } catch (error) {
       console.error('Error fetching movies from OMDB:', error);
       // Continue with empty array if fetch fails

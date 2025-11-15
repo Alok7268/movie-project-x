@@ -47,7 +47,16 @@ export function getMovieById(id: number): Movie | undefined {
 }
 
 export function getMoviesByGenre(genre: string): Movie[] {
-  return movies.filter(m => m.genres.includes(genre));
+  if (!genre || typeof genre !== 'string') {
+    return [];
+  }
+  
+  // Normalize genre name for comparison (trim, lowercase)
+  const normalizedGenre = genre.trim().toLowerCase();
+  
+  return movies.filter(m => 
+    m.genres.some(g => g.trim().toLowerCase() === normalizedGenre)
+  );
 }
 
 export function getMoviesByYear(year: number): Movie[] {
@@ -267,88 +276,98 @@ export async function fetchMoviesFromOMDBByGenre(genre: string): Promise<Movie[]
     'adventure': ['adventure', 'journey', 'quest'],
   };
 
+  // Normalize genre name
+  const normalizedGenre = genre.trim().toLowerCase();
+  
   // Get search terms for this genre (default to genre name if not found)
-  const searchTerms = genreSearchTerms[genre.toLowerCase()] || [genre.toLowerCase()];
+  const searchTerms = genreSearchTerms[normalizedGenre] || [normalizedGenre];
   
-  // Search for movies using the first search term
-  const searchTerm = searchTerms[0];
-  
-  try {
-    // Use OMDB search endpoint
-    const searchUrl = `https://www.omdbapi.com/?s=${encodeURIComponent(searchTerm)}&type=movie&apikey=${OMDB_API_KEY}&page=1`;
-    const searchResponse = await fetch(searchUrl);
-    const searchData = await searchResponse.json();
+  // Try multiple search terms to get better results
+  for (const searchTerm of searchTerms.slice(0, 2)) { // Try first 2 search terms
+    try {
+      // Use OMDB search endpoint
+      const searchUrl = `https://www.omdbapi.com/?s=${encodeURIComponent(searchTerm)}&type=movie&apikey=${OMDB_API_KEY}&page=1`;
+      const searchResponse = await fetch(searchUrl);
+      const searchData = await searchResponse.json();
 
-    if (searchData.Response === 'True' && searchData.Search) {
-      // Limit to first 20 results to avoid too many API calls
-      const searchResults = searchData.Search.slice(0, 20);
-      
-      // Fetch detailed info for each movie
-      for (const result of searchResults) {
-        try {
-          // Add delay to respect rate limits
-          await new Promise(resolve => setTimeout(resolve, 200));
-          
-          const detailUrl = `https://www.omdbapi.com/?i=${result.imdbID}&apikey=${OMDB_API_KEY}`;
-          const detailResponse = await fetch(detailUrl);
-          const detailData = await detailResponse.json();
+      if (searchData.Response === 'True' && searchData.Search) {
+        // Limit to first 20 results to avoid too many API calls
+        const searchResults = searchData.Search.slice(0, 20);
+        
+        // Fetch detailed info for each movie
+        for (const result of searchResults) {
+          try {
+            // Add delay to respect rate limits
+            await new Promise(resolve => setTimeout(resolve, 200));
+            
+            const detailUrl = `https://www.omdbapi.com/?i=${result.imdbID}&apikey=${OMDB_API_KEY}`;
+            const detailResponse = await fetch(detailUrl);
+            const detailData = await detailResponse.json();
 
-          if (detailData.Response === 'True') {
-            // Check if movie matches the genre
-            const movieGenres = detailData.Genre?.split(',').map((g: string) => g.trim()) || [];
-            const genreLower = genre.toLowerCase();
-            const matchesGenre = movieGenres.some((g: string) => 
-              g.toLowerCase() === genreLower || 
-              g.toLowerCase().includes(genreLower) ||
-              genreLower.includes(g.toLowerCase())
-            );
+            if (detailData.Response === 'True') {
+              // Check if movie matches the genre - improved matching
+              const movieGenres = detailData.Genre?.split(',').map((g: string) => g.trim().toLowerCase()) || [];
+              const matchesGenre = movieGenres.some((g: string) => {
+                const gLower = g.toLowerCase();
+                return gLower === normalizedGenre || 
+                       gLower.includes(normalizedGenre) ||
+                       normalizedGenre.includes(gLower) ||
+                       // Handle common variations
+                       (normalizedGenre === 'sci-fi' && (gLower === 'science fiction' || gLower.includes('sci-fi'))) ||
+                       (normalizedGenre === 'science fiction' && (gLower === 'sci-fi' || gLower.includes('science fiction')));
+              });
 
-            if (matchesGenre) {
-              // Map OMDB response to our Movie type
-              const year = detailData.Year ? parseInt(detailData.Year.split('–')[0]) : null;
-              const movie: Movie = {
-                id: parseInt(result.imdbID.replace('tt', '')) || Date.now() + Math.random(),
-                title: detailData.Title || result.Title,
-                tagline: '',
-                overview: detailData.Plot || '',
-                releaseDate: detailData.Released || detailData.Year || '',
-                popularity: 0,
-                voteAverage: detailData.imdbRating ? parseFloat(detailData.imdbRating) : 0,
-                voteCount: detailData.imdbVotes ? parseInt(detailData.imdbVotes.replace(/,/g, '')) : 0,
-                runtime: detailData.Runtime ? parseInt(detailData.Runtime.replace(' min', '')) : 0,
-                budget: 0,
-                revenue: 0,
-                originalLanguage: detailData.Language?.split(',')[0] || 'en',
-                status: 'Released',
-                genres: movieGenres,
-                keywords: [],
-                productionCompanies: detailData.Production?.split(',').map((p: string) => p.trim()) || [],
-                posterPath: detailData.Poster && detailData.Poster !== 'N/A' ? detailData.Poster : null,
-                backdropPath: detailData.Poster && detailData.Poster !== 'N/A' ? detailData.Poster : null,
-                cast: detailData.Actors?.split(',').slice(0, 5).map((actor: string) => ({
-                  name: actor.trim(),
-                  character: '',
-                  profilePath: null,
-                })) || [],
-                director: detailData.Director || null,
-                year: year,
-                decade: year ? Math.floor(year / 10) * 10 : null,
-              };
-              
-              movies.push(movie);
-              
-              // Limit to 12 movies per genre
-              if (movies.length >= 12) break;
+              if (matchesGenre) {
+                // Map OMDB response to our Movie type
+                const year = detailData.Year ? parseInt(detailData.Year.split('–')[0]) : null;
+                const movie: Movie = {
+                  id: parseInt(result.imdbID.replace('tt', '')) || Date.now() + Math.random(),
+                  title: detailData.Title || result.Title,
+                  tagline: '',
+                  overview: detailData.Plot || '',
+                  releaseDate: detailData.Released || detailData.Year || '',
+                  popularity: 0,
+                  voteAverage: detailData.imdbRating ? parseFloat(detailData.imdbRating) : 0,
+                  voteCount: detailData.imdbVotes ? parseInt(detailData.imdbVotes.replace(/,/g, '')) : 0,
+                  runtime: detailData.Runtime ? parseInt(detailData.Runtime.replace(' min', '')) : 0,
+                  budget: 0,
+                  revenue: 0,
+                  originalLanguage: detailData.Language?.split(',')[0] || 'en',
+                  status: 'Released',
+                  genres: movieGenres,
+                  keywords: [],
+                  productionCompanies: detailData.Production?.split(',').map((p: string) => p.trim()) || [],
+                  posterPath: detailData.Poster && detailData.Poster !== 'N/A' ? detailData.Poster : null,
+                  backdropPath: detailData.Poster && detailData.Poster !== 'N/A' ? detailData.Poster : null,
+                  cast: detailData.Actors?.split(',').slice(0, 5).map((actor: string) => ({
+                    name: actor.trim(),
+                    character: '',
+                    profilePath: null,
+                  })) || [],
+                  director: detailData.Director || null,
+                  year: year,
+                  decade: year ? Math.floor(year / 10) * 10 : null,
+                };
+                
+                movies.push(movie);
+                
+                // Limit to 12 movies per genre
+                if (movies.length >= 12) break;
+              }
             }
+          } catch (error) {
+            console.error(`Error fetching details for ${result.imdbID}:`, error);
+            continue;
           }
-        } catch (error) {
-          console.error(`Error fetching details for ${result.imdbID}:`, error);
-          continue;
         }
+        
+        // If we found enough movies, break out of search terms loop
+        if (movies.length >= 12) break;
       }
+    } catch (error) {
+      console.error(`Error searching OMDB for genre ${genre} with term ${searchTerm}:`, error);
+      continue; // Try next search term
     }
-  } catch (error) {
-    console.error(`Error searching OMDB for genre ${genre}:`, error);
   }
 
   return movies;
