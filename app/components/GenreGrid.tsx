@@ -1,42 +1,74 @@
 'use client';
 
+import { useEffect } from 'react';
+import { InfiniteMovingCards } from './ui/infinite-moving-cards';
+import { getGenreImage, resetGenreImageCache } from '@/lib/movies';
+
 interface GenreGridProps {
   genres: string[];
   onGenreClick?: (genre: string) => void;
 }
 
 export default function GenreGrid({ genres, onGenreClick }: GenreGridProps) {
-  const handleGenreClick = (genre: string) => {
-    onGenreClick?.(genre);
-    // Navigate to genre page or filter movies
-    // This can be extended later
-  };
+  // Reset cache when component mounts to ensure fresh assignment
+  useEffect(() => {
+    resetGenreImageCache();
+  }, []);
+
+  // Convert genres to the format expected by InfiniteMovingCards
+  // Process genres in order to ensure unique image assignment
+  const genreItems = genres.map((genre) => ({
+    quote: genre,
+    name: genre,
+    title: genre,
+    image: getGenreImage(genre),
+  }));
+
+  // Split genres into 3 groups for 3 rows
+  const chunkSize = Math.ceil(genres.length / 3);
+  const row1Genres = genreItems.slice(0, chunkSize);
+  const row2Genres = genreItems.slice(chunkSize, chunkSize * 2);
+  const row3Genres = genreItems.slice(chunkSize * 2);
 
   return (
     <section className="py-16 px-6">
       <div className="max-w-7xl mx-auto">
         {/* Section Heading */}
-        <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-12">
+        <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-white to-[#ffc300] bg-clip-text text-transparent text-center mb-12">
           Browse by Genre
         </h2>
 
-        {/* Genre Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-          {genres.map((genre) => (
-            <button
-              key={genre}
-              onClick={() => handleGenreClick(genre)}
-              className="group relative bg-gradient-to-br from-[#33134a] to-[#231758] rounded-xl p-8 md:p-12 border-2 border-[#440f3b] hover:border-[#76030f] transition-all duration-300 hover:scale-105 overflow-hidden"
-            >
-              {/* Gradient Overlay on Hover */}
-              <div className="absolute inset-0 bg-gradient-to-br from-[#76030f]/0 to-[#550b2c]/0 group-hover:from-[#76030f]/30 group-hover:to-[#550b2c]/30 transition-all duration-300"></div>
-              
-              {/* Genre Name */}
-              <span className="relative z-10 text-white text-lg md:text-xl font-bold text-center block">
-                {genre}
-              </span>
-            </button>
-          ))}
+        {/* Three Rows of Infinite Moving Cards */}
+        <div className="space-y-2">
+          {/* Row 1 - Moving Right, Fast */}
+          <div className="h-[180px] rounded-md flex flex-col antialiased bg-transparent items-center justify-center relative overflow-hidden">
+            <InfiniteMovingCards
+              items={row1Genres}
+              direction="right"
+              speed="fast"
+              onItemClick={(item) => onGenreClick?.(item.name)}
+            />
+          </div>
+
+          {/* Row 2 - Moving Left, Normal */}
+          <div className="h-[180px] rounded-md flex flex-col antialiased bg-transparent items-center justify-center relative overflow-hidden">
+            <InfiniteMovingCards
+              items={row2Genres}
+              direction="left"
+              speed="normal"
+              onItemClick={(item) => onGenreClick?.(item.name)}
+            />
+          </div>
+
+          {/* Row 3 - Moving Right, Slow */}
+          <div className="h-[180px] rounded-md flex flex-col antialiased bg-transparent items-center justify-center relative overflow-hidden">
+            <InfiniteMovingCards
+              items={row3Genres}
+              direction="right"
+              speed="slow"
+              onItemClick={(item) => onGenreClick?.(item.name)}
+            />
+          </div>
         </div>
       </div>
     </section>

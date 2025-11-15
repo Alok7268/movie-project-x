@@ -27,12 +27,12 @@ export default function HeroSection({ stats, onSearchChange }: HeroSectionProps)
       {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-20 text-center">
         {/* Headline */}
-        <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white via-[#76030f] to-[#550b2c] bg-clip-text text-transparent tracking-tight">
+        <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white via-[#ffc300] to-[#ffd60a] bg-clip-text text-transparent tracking-tight drop-shadow-2xl">
           Discover Your Next Favorite Movie
         </h1>
         
         {/* Subtitle */}
-        <p className="text-xl md:text-2xl text-gray-200 mb-12 max-w-3xl mx-auto">
+        <p className="text-xl md:text-2xl text-gray-300 mb-12 max-w-3xl mx-auto">
           Explore our curated collection of {stats.total.toLocaleString()}+ movies from {stats.years}
         </p>
 
@@ -44,10 +44,10 @@ export default function HeroSection({ stats, onSearchChange }: HeroSectionProps)
               placeholder="Search for movies, directors, actors..."
               value={searchQuery}
               onChange={handleSearchChange}
-              className="w-full px-6 py-4 text-lg rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-[#76030f] focus:border-transparent transition-all duration-300"
+              className="w-full px-6 py-4 text-lg rounded-2xl bg-[#001d3d]/60 backdrop-blur-md border border-[#003566]/50 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#ffc300] focus:border-[#ffc300] transition-all duration-300 shadow-lg shadow-[#003566]/20"
             />
             <svg
-              className="absolute right-6 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-200"
+              className="absolute right-6 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-400 group-hover:text-[#ffc300] transition-colors duration-300"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -64,17 +64,17 @@ export default function HeroSection({ stats, onSearchChange }: HeroSectionProps)
 
         {/* Stats Section */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
-          <div className="bg-[#231758]/40 backdrop-blur-md rounded-xl p-6 border border-[#33134a] hover:bg-[#231758]/60 transition-all duration-300 hover:scale-105">
-            <div className="text-4xl font-bold text-white mb-2">{stats.total.toLocaleString()}</div>
-            <div className="text-gray-200">Total Movies</div>
+          <div className="bg-gradient-to-br from-[#001d3d]/80 to-[#000814]/80 backdrop-blur-md rounded-xl p-6 border border-[#003566]/50 hover:border-[#ffc300]/50 hover:bg-gradient-to-br hover:from-[#001d3d] hover:to-[#000814] transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-[#ffc300]/20">
+            <div className="text-4xl font-bold bg-gradient-to-r from-[#ffc300] to-[#ffd60a] bg-clip-text text-transparent mb-2">{stats.total.toLocaleString()}</div>
+            <div className="text-gray-300">Total Movies</div>
           </div>
-          <div className="bg-[#231758]/40 backdrop-blur-md rounded-xl p-6 border border-[#33134a] hover:bg-[#231758]/60 transition-all duration-300 hover:scale-105">
-            <div className="text-4xl font-bold text-white mb-2">{stats.genres}</div>
-            <div className="text-gray-200">Genres</div>
+          <div className="bg-gradient-to-br from-[#001d3d]/80 to-[#000814]/80 backdrop-blur-md rounded-xl p-6 border border-[#003566]/50 hover:border-[#ffc300]/50 hover:bg-gradient-to-br hover:from-[#001d3d] hover:to-[#000814] transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-[#ffc300]/20">
+            <div className="text-4xl font-bold bg-gradient-to-r from-[#ffc300] to-[#ffd60a] bg-clip-text text-transparent mb-2">{stats.genres}</div>
+            <div className="text-gray-300">Genres</div>
           </div>
-          <div className="bg-[#231758]/40 backdrop-blur-md rounded-xl p-6 border border-[#33134a] hover:bg-[#231758]/60 transition-all duration-300 hover:scale-105">
-            <div className="text-4xl font-bold text-white mb-2">{stats.years}</div>
-            <div className="text-gray-200">Year Range</div>
+          <div className="bg-gradient-to-br from-[#001d3d]/80 to-[#000814]/80 backdrop-blur-md rounded-xl p-6 border border-[#003566]/50 hover:border-[#ffc300]/50 hover:bg-gradient-to-br hover:from-[#001d3d] hover:to-[#000814] transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-[#ffc300]/20">
+            <div className="text-4xl font-bold bg-gradient-to-r from-[#ffc300] to-[#ffd60a] bg-clip-text text-transparent mb-2">{stats.years}</div>
+            <div className="text-gray-300">Year Range</div>
           </div>
         </div>
       </div>

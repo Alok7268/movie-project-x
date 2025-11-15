@@ -2,15 +2,20 @@
 
 :root {
   /* New color palette */
-  --color-primary: #76030f;
-  --color-secondary: #65071e;
-  --color-accent-1: #550b2c;
-  --color-accent-2: #440f3b;
-  --color-accent-3: #33134a;
-  --color-accent-4: #231758;
-  --color-accent-5: #121b67;
+  --ink-black: #000814ff;
+  --prussian-blue: #001d3dff;
+  --regal-navy: #003566ff;
+  --school-bus-yellow: #ffc300ff;
+  --gold: #ffd60aff;
   
-  --background: #121b67;
+  /* Semantic color mappings */
+  --color-primary: var(--school-bus-yellow);
+  --color-secondary: var(--gold);
+  --color-accent-1: var(--regal-navy);
+  --color-accent-2: var(--prussian-blue);
+  --color-accent-3: var(--ink-black);
+  
+  --background: var(--ink-black);
   --foreground: #ededed;
 }
 
@@ -23,7 +28,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #121b67;
+    --background: var(--ink-black);
     --foreground: #ededed;
   }
 }
@@ -61,4 +66,24 @@ body {
 
 .animation-delay-4000 {
   animation-delay: 4s;
+}
+
+/* Infinite Moving Cards Animation */
+@keyframes scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-50% - 0.5rem));
+  }
+}
+
+.scroller ul.animate-scroll {
+  animation: scroll 40s forwards linear infinite;
+}
+
+/* 3D Transform Support */
+.transform-3d {
+  transform-style: preserve-3d;
+  perspective: 1000px;
 }

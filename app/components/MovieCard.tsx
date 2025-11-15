@@ -14,9 +14,9 @@ export default function MovieCard({ movie }: MovieCardProps) {
   const genres = movie.genres.slice(0, 2);
 
   return (
-    <div className="group relative aspect-[2/3] rounded-lg overflow-hidden cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-2xl bg-[#33134a]">
+    <div className="group relative aspect-[2/3] rounded-lg overflow-hidden cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-[#ffc300]/20 bg-gradient-to-br from-[#001d3d] to-[#000814] border border-[#003566]/30">
       {/* Movie Poster or Placeholder */}
-      <div className="relative w-full h-full bg-[#1f2937]">
+      <div className="relative w-full h-full bg-[#000814]">
         {posterUrl.endsWith('.svg') ? (
           // Use regular img tag for SVG placeholder files
           <img
@@ -30,14 +30,14 @@ export default function MovieCard({ movie }: MovieCardProps) {
             src={posterUrl}
             alt={movie.title}
             fill
-            className="object-cover"
+            className="object-cover group-hover:scale-110 transition-transform duration-300"
             sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw"
             unoptimized={posterUrl.startsWith('http')}
           />
         )}
         
         {/* Rating Badge */}
-        <div className="absolute top-3 right-3 bg-yellow-400/90 backdrop-blur-sm text-gray-900 px-3 py-1.5 rounded-full flex items-center gap-1.5 font-bold text-sm z-10">
+        <div className="absolute top-3 right-3 bg-gradient-to-r from-[#ffc300] to-[#ffd60a] backdrop-blur-sm text-[#000814] px-3 py-1.5 rounded-full flex items-center gap-1.5 font-bold text-sm z-10 shadow-lg shadow-[#ffc300]/30">
           <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20">
             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
           </svg>
@@ -45,19 +45,19 @@ export default function MovieCard({ movie }: MovieCardProps) {
         </div>
 
         {/* Glass-morphism Overlay on Hover */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#121b67]/90 via-[#231758]/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-[#000814]/95 via-[#001d3d]/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
         {/* Movie Info on Hover */}
         <div className="absolute bottom-0 left-0 right-0 p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-          <h3 className="text-white font-bold text-lg mb-2 line-clamp-2">
+          <h3 className="text-white font-bold text-lg mb-2 line-clamp-2 group-hover:text-[#ffc300] transition-colors duration-300">
             {movie.title}
           </h3>
           <div className="flex items-center gap-3 mb-3 flex-wrap">
-            {year && <span className="text-gray-200 text-sm">{year}</span>}
+            {year && <span className="text-gray-200 text-sm bg-[#003566]/60 px-2 py-1 rounded-full border border-[#003566]/80">{year}</span>}
             {genres.map((genre) => (
               <span
                 key={genre}
-                className="px-2 py-1 bg-[#76030f]/80 backdrop-blur-sm text-white text-xs rounded-full"
+                className="px-2 py-1 bg-[#001d3d]/80 backdrop-blur-sm text-[#ffc300] text-xs rounded-full border border-[#003566]/50 font-medium"
               >
                 {genre}
               </span>

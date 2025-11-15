@@ -20,45 +20,47 @@ export default function NavigationHeader() {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? 'bg-[#121b67]/95 backdrop-blur-md border-b border-[#231758] shadow-lg'
+          ? 'bg-[#000814]/95 backdrop-blur-md border-b border-[#003566]/50 shadow-lg shadow-[#ffc300]/10'
           : 'bg-transparent'
       }`}
     >
       <nav className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="text-2xl font-bold text-white hover:text-[#76030f] transition-colors duration-300">
-            Movie Directory
+          <Link href="/" className="text-2xl font-bold text-white hover:text-[#ffc300] transition-colors duration-300 flex items-center gap-2">
+            <span className="bg-gradient-to-r from-[#ffc300] to-[#ffd60a] bg-clip-text text-transparent">
+              Movie Directory
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex items-center gap-6">
             <Link
               href="/"
-              className="text-gray-200 hover:text-white transition-colors duration-300 font-medium"
+              className="text-gray-300 hover:text-[#ffc300] transition-colors duration-300 font-medium px-3 py-2 rounded-lg hover:bg-[#001d3d]/50"
             >
               Home
             </Link>
             <Link
               href="/movies"
-              className="text-gray-200 hover:text-white transition-colors duration-300 font-medium"
+              className="text-gray-300 hover:text-[#ffc300] transition-colors duration-300 font-medium px-3 py-2 rounded-lg hover:bg-[#001d3d]/50"
             >
               Movies
             </Link>
             <Link
               href="/genres"
-              className="text-gray-200 hover:text-white transition-colors duration-300 font-medium"
+              className="text-gray-300 hover:text-[#ffc300] transition-colors duration-300 font-medium px-3 py-2 rounded-lg hover:bg-[#001d3d]/50"
             >
               Genres
             </Link>
             <Link
               href="/about"
-              className="text-gray-200 hover:text-white transition-colors duration-300 font-medium"
+              className="text-gray-300 hover:text-[#ffc300] transition-colors duration-300 font-medium px-3 py-2 rounded-lg hover:bg-[#001d3d]/50"
             >
               About
             </Link>
             <button
-              className="p-2 text-gray-200 hover:text-white transition-colors duration-300"
+              className="p-2.5 text-gray-300 hover:text-[#ffc300] hover:bg-[#001d3d]/50 transition-all duration-300 rounded-lg"
               aria-label="Search"
             >
               <svg
@@ -79,7 +81,7 @@ export default function NavigationHeader() {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2 text-white"
+            className="md:hidden p-2 text-white hover:text-[#ffc300] transition-colors duration-300"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label="Toggle menu"
           >
@@ -110,32 +112,32 @@ export default function NavigationHeader() {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden mt-4 pb-4 border-t border-[#231758]">
-            <div className="flex flex-col gap-4 pt-4">
+          <div className="md:hidden mt-4 pb-4 border-t border-[#003566]/50 bg-[#001d3d]/30 backdrop-blur-md rounded-lg">
+            <div className="flex flex-col gap-2 pt-4 px-4">
               <Link
                 href="/"
-                className="text-gray-200 hover:text-white transition-colors duration-300 font-medium"
+                className="text-gray-300 hover:text-[#ffc300] hover:bg-[#001d3d]/50 transition-all duration-300 font-medium px-4 py-2 rounded-lg"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Home
               </Link>
               <Link
                 href="/movies"
-                className="text-gray-200 hover:text-white transition-colors duration-300 font-medium"
+                className="text-gray-300 hover:text-[#ffc300] hover:bg-[#001d3d]/50 transition-all duration-300 font-medium px-4 py-2 rounded-lg"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Movies
               </Link>
               <Link
                 href="/genres"
-                className="text-gray-200 hover:text-white transition-colors duration-300 font-medium"
+                className="text-gray-300 hover:text-[#ffc300] hover:bg-[#001d3d]/50 transition-all duration-300 font-medium px-4 py-2 rounded-lg"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Genres
               </Link>
               <Link
                 href="/about"
-                className="text-gray-200 hover:text-white transition-colors duration-300 font-medium"
+                className="text-gray-300 hover:text-[#ffc300] hover:bg-[#001d3d]/50 transition-all duration-300 font-medium px-4 py-2 rounded-lg"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 About

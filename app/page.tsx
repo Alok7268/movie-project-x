@@ -1,5 +1,5 @@
 import { getAllMovies, getAllGenres, getTopRated, getYearRange } from '@/lib/movies';
-import HeroSection from './components/HeroSection';
+import ThreeDMarqueeHero from './components/ThreeDMarqueeHero';
 import FeaturedMovies from './components/FeaturedMovies';
 import GenreGrid from './components/GenreGrid';
 import NavigationHeader from './components/NavigationHeader';
@@ -21,14 +21,14 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen relative">
+    <div className="min-h-screen relative bg-[#000814]">
       {/* Sparkles Background */}
       <SparklesBackground />
       
       {/* Content Layer */}
       <div className="relative z-10">
         <NavigationHeader />
-        <HeroSection stats={stats} />
+        <ThreeDMarqueeHero stats={stats} />
         <FeaturedMovies movies={topMovies} />
         <GenreGrid genres={allGenres} />
         <Footer />

@@ -12,10 +12,10 @@ export default function FeaturedMovies({ movies }: FeaturedMoviesProps) {
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
         <div className="flex items-center justify-center mb-10 relative">
-          <h2 className="text-3xl md:text-4xl font-bold text-white">Top Rated Movies</h2>
+          <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-white to-[#ffc300] bg-clip-text text-transparent">Top Rated Movies</h2>
           <Link
             href="/movies"
-            className="absolute right-0 flex items-center gap-2 text-[#76030f] hover:text-[#65071e] font-semibold transition-colors duration-300 group"
+            className="absolute right-0 flex items-center gap-2 text-[#ffc300] hover:text-[#ffd60a] font-semibold transition-colors duration-300 group px-4 py-2 rounded-lg hover:bg-[#001d3d]/50 border border-[#003566]/50 hover:border-[#ffc300]/50"
           >
             View All
             <svg

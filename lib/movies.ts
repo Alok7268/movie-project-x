@@ -93,3 +93,118 @@ export function searchMovies(query: string): Movie[] {
   );
 }
 
+// Simple hash function to generate consistent index for each genre
+function hashString(str: string): number {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32-bit integer
+  }
+  return Math.abs(hash);
+}
+
+// Cache to track which movie IDs have been used for genre images
+// This ensures each genre gets a unique movie
+const usedMovieIds = new Set<number>();
+
+export function getGenreImage(genre: string): string {
+  // Get all movies in this genre, sorted by popularity and rating
+  const allGenreMovies = getMoviesByGenre(genre).sort((a, b) => {
+    // Sort by vote average first, then by popularity
+    if (b.voteAverage !== a.voteAverage) {
+      return b.voteAverage - a.voteAverage;
+    }
+    return b.popularity - a.popularity;
+  });
+
+  if (allGenreMovies.length === 0) {
+    // Return placeholder if no movies in genre
+    return '/no-poster.svg';
+  }
+
+  // Use hash of genre name to select a consistent but unique movie index for each genre
+  // This ensures each genre gets a different starting point
+  const genreHash = hashString(genre);
+  const startIndex = genreHash % allGenreMovies.length;
+  
+  // Create a rotated list starting from the hashed index
+  const moviesToCheck = [
+    ...allGenreMovies.slice(startIndex),
+    ...allGenreMovies.slice(0, startIndex)
+  ];
+
+  // First, try to find a movie with a valid poster that hasn't been used yet
+  for (const movie of moviesToCheck) {
+    // Skip if this movie ID has already been used for another genre
+    if (usedMovieIds.has(movie.id)) {
+      continue;
+    }
+
+    if (movie.posterPath && 
+        movie.posterPath.trim() !== '' && 
+        !movie.posterPath.includes('no-poster') &&
+        !movie.posterPath.includes('placeholder')) {
+      const posterUrl = getPosterUrl(movie.posterPath, 'w500');
+      // Make sure it's not a placeholder and is a valid URL
+      if (posterUrl && 
+          !posterUrl.includes('no-poster') && 
+          !posterUrl.includes('placeholder') &&
+          (posterUrl.startsWith('http://') || posterUrl.startsWith('https://'))) {
+        // Mark this movie as used
+        usedMovieIds.add(movie.id);
+        return posterUrl;
+      }
+    }
+  }
+
+  // If no unused poster found, try backdrops
+  for (const movie of moviesToCheck) {
+    // Skip if this movie ID has already been used
+    if (usedMovieIds.has(movie.id)) {
+      continue;
+    }
+
+    if (movie.backdropPath && 
+        movie.backdropPath.trim() !== '' && 
+        !movie.backdropPath.includes('no-backdrop') &&
+        !movie.backdropPath.includes('placeholder')) {
+      const backdropUrl = getBackdropUrl(movie.backdropPath, 'w780');
+      // Make sure it's not a placeholder and is a valid URL
+      if (backdropUrl && 
+          !backdropUrl.includes('no-backdrop') && 
+          !backdropUrl.includes('placeholder') &&
+          (backdropUrl.startsWith('http://') || backdropUrl.startsWith('https://'))) {
+        // Mark this movie as used
+        usedMovieIds.add(movie.id);
+        return backdropUrl;
+      }
+    }
+  }
+
+  // If still no image found, allow reuse but try to get a different one
+  // Reset and try again without the uniqueness constraint
+  for (const movie of moviesToCheck) {
+    if (movie.posterPath && 
+        movie.posterPath.trim() !== '' && 
+        !movie.posterPath.includes('no-poster') &&
+        !movie.posterPath.includes('placeholder')) {
+      const posterUrl = getPosterUrl(movie.posterPath, 'w500');
+      if (posterUrl && 
+          !posterUrl.includes('no-poster') && 
+          !posterUrl.includes('placeholder') &&
+          (posterUrl.startsWith('http://') || posterUrl.startsWith('https://'))) {
+        return posterUrl;
+      }
+    }
+  }
+
+  // Last resort: return placeholder
+  return '/no-poster.svg';
+}
+
+// Function to reset the cache (useful for testing or if genres change)
+export function resetGenreImageCache(): void {
+  usedMovieIds.clear();
+}
+
