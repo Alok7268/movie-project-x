@@ -42,8 +42,23 @@ export function getAllGenres(): string[] {
   return Array.from(genreSet).sort();
 }
 
+export function getYearRange(): string {
+  const years = movies
+    .map(m => m.year)
+    .filter((year): year is number => year !== null);
+  
+  if (years.length === 0) return 'N/A';
+  
+  const minYear = Math.min(...years);
+  const maxYear = Math.max(...years);
+  
+  return minYear === maxYear ? `${minYear}` : `${minYear}-${maxYear}`;
+}
+
 export function getTopRated(limit: number = 10): Movie[] {
-  return movies.slice(0, limit);
+  return [...movies]
+    .sort((a, b) => b.voteAverage - a.voteAverage)
+    .slice(0, limit);
 }
 
 export function searchMovies(query: string): Movie[] {
