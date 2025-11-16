@@ -2,8 +2,6 @@ import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import { filterMovies, findGenreBySlug, MovieFilterOptions, getPopularGenres, getPopularActors, getPopularDirectors } from '@/lib/movies';
 import FeaturedMovies from '../components/FeaturedMovies';
-import NavigationHeader from '../components/NavigationHeader';
-import Footer from '../components/Footer';
 import SparklesBackground from '../components/SparklesBackground';
 import PermutationButtons from '../components/PermutationButtons';
 
@@ -172,13 +170,12 @@ export default async function MoviesPage({ searchParams }: MoviesPageProps) {
     const sortedMovies = [...allMovies].sort((a, b) => b.voteAverage - a.voteAverage);
     
     return (
-      <div className="min-h-screen relative bg-[#000814]">
+      <div className="min-h-screen relative bg-[#000000]">
         <SparklesBackground />
         <div className="relative z-10">
-          <NavigationHeader />
           <section className="pt-32 pb-8 px-6">
             <div className="max-w-7xl mx-auto text-center">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-white via-[#ffc300] to-[#ffd60a] bg-clip-text text-transparent mb-4">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-white via-[#696969] to-[#7a7a7a] bg-clip-text text-transparent mb-4">
                 Best Movies
               </h1>
               <p className="text-gray-300 text-lg md:text-xl">
@@ -199,7 +196,6 @@ export default async function MoviesPage({ searchParams }: MoviesPageProps) {
             title=""
             showViewAll={false}
           />
-          <Footer />
         </div>
       </div>
     );
@@ -220,15 +216,13 @@ export default async function MoviesPage({ searchParams }: MoviesPageProps) {
   const pageTitle = generatePageTitle(filters);
   
   return (
-    <div className="min-h-screen relative bg-[#000814]">
+    <div className="min-h-screen relative bg-[#000000]">
       <SparklesBackground />
       <div className="relative z-10">
-        <NavigationHeader />
-        
         {/* Page Header Section */}
         <section className="pt-32 pb-8 px-6">
           <div className="max-w-7xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-white via-[#ffc300] to-[#ffd60a] bg-clip-text text-transparent mb-4">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-white via-[#696969] to-[#7a7a7a] bg-clip-text text-transparent mb-4">
               {pageTitle}
             </h1>
             <p className="text-gray-300 text-lg md:text-xl">
@@ -250,8 +244,6 @@ export default async function MoviesPage({ searchParams }: MoviesPageProps) {
           title=""
           showViewAll={false}
         />
-        
-        <Footer />
       </div>
     </div>
   );

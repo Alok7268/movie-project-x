@@ -126,7 +126,7 @@ export default function PermutationButtons({
     <section className="py-12 px-6">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-8">
-          <h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-white to-[#ffc300] bg-clip-text text-transparent mb-2">
+          <h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-white to-[#696969] bg-clip-text text-transparent mb-2">
             Explore Movie Permutations
           </h2>
           <p className="text-gray-400 text-sm md:text-base">
@@ -140,7 +140,7 @@ export default function PermutationButtons({
               <Link
                 key={index}
                 href={perm.href}
-                className="px-4 py-2 rounded-lg bg-[#001d3d]/50 border border-[#003566]/50 hover:border-[#ffc300]/50 text-gray-300 hover:text-[#ffc300] font-medium text-sm transition-all duration-300 hover:bg-[#003566]/70 hover:scale-105 whitespace-nowrap"
+                className="px-4 py-2 rounded-lg bg-[#232323]/50 border border-[#343434]/50 hover:border-[#696969]/50 text-gray-300 hover:text-[#696969] font-medium text-sm transition-all duration-300 hover:bg-[#343434]/70 hover:scale-105 whitespace-nowrap"
               >
                 {perm.label}
               </Link>

@@ -146,29 +146,29 @@ export default function ThreeDMarqueeHero({ stats }: ThreeDMarqueeHeroProps) {
         loading={isLoadingResults}
       />
 
-      <div className="relative mx-auto my-10 flex min-h-[90vh] w-full max-w-7xl flex-col items-center justify-center overflow-hidden rounded-3xl px-6">
-        <motion.div className="relative z-20 mx-4 my-4 flex flex-col items-center justify-center gap-4 text-center sm:mx-0 sm:mb-0 sm:flex-row">
+      <div className="relative mx-auto mt-20 md:mt-24 mb-2 md:mb-10 flex min-h-[85vh] md:min-h-[90vh] w-full max-w-7xl flex-col items-center justify-center overflow-hidden rounded-3xl px-4 md:px-6">
+        <motion.div className="relative z-20 mx-4 my-2 md:my-4 flex flex-col items-center justify-center gap-4 text-center sm:mx-0 sm:mb-0 sm:flex-row">
           <LayoutTextFlip
             text="Discover Your Next "
             words={["Favorite Movie", "Cinematic Gem", "Blockbuster Hit", "Classic Film", "Award Winner"]}
             duration={3000}
           />
         </motion.div>
-        <p className="relative z-20 mx-auto max-w-2xl py-8 text-center text-sm text-neutral-200 md:text-base">
+        <p className="relative z-20 mx-auto max-w-2xl py-4 md:py-8 text-center text-xs sm:text-sm text-neutral-200 md:text-base px-2">
           Explore our curated collection of {stats?.total.toLocaleString() || 'thousands'} movies from {stats?.years || 'various years'}. 
           From timeless classics to modern masterpieces, find your perfect watch.
         </p>
-        <form onSubmit={handleSearch} className="relative z-20 w-full max-w-2xl mx-auto pt-4">
+        <form onSubmit={handleSearch} className="relative z-20 w-full max-w-2xl mx-auto pt-2 md:pt-4 px-2">
           <div className="relative">
             <input
               type="text"
               placeholder="Search for movies, directors, actors..."
               value={searchQuery}
               onChange={handleInputChange}
-              className="w-full px-6 py-4 pl-14 pr-14 text-base md:text-lg rounded-2xl bg-black/60 backdrop-blur-md border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#ffc300] focus:border-[#ffc300] transition-all duration-300 shadow-lg"
+              className="w-full px-4 sm:px-6 py-3 sm:py-4 pl-12 sm:pl-14 pr-12 sm:pr-14 text-sm sm:text-base md:text-lg rounded-xl sm:rounded-2xl bg-black/60 backdrop-blur-md border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#696969] focus:border-[#696969] transition-all duration-300 shadow-lg"
             />
             <svg
-              className="absolute left-5 top-1/2 transform -translate-y-1/2 w-5 h-5 md:w-6 md:h-6 text-gray-400 pointer-events-none"
+              className="absolute left-3 sm:left-5 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-gray-400 pointer-events-none"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -184,7 +184,7 @@ export default function ThreeDMarqueeHero({ stats }: ThreeDMarqueeHeroProps) {
               <button
                 type="button"
                 onClick={() => setSearchQuery("")}
-                className="absolute right-5 top-1/2 transform -translate-y-1/2 w-5 h-5 md:w-6 md:h-6 text-gray-400 hover:text-white transition-colors duration-200"
+                className="absolute right-3 sm:right-5 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-gray-400 hover:text-white transition-colors duration-200"
                 aria-label="Clear search"
               >
                 <svg

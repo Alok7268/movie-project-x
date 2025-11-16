@@ -17,10 +17,10 @@ export default function MovieCard3D({ movie, priority = false }: MovieCard3DProp
 
   return (
     <CardContainer className="inter-var w-full h-full" containerClassName="py-0 w-full h-full">
-      <CardBody className="bg-gradient-to-br from-[#001d3d] to-[#000814] relative group/card dark:hover:shadow-2xl dark:hover:shadow-[#ffc300]/20 dark:bg-gradient-to-br dark:from-[#001d3d] dark:to-[#000814] dark:border-[#003566]/50 border-[#003566]/30 w-full h-full flex flex-col rounded-xl p-3 border backdrop-blur-sm">
+      <CardBody className="bg-gradient-to-br from-[#232323] to-[#000000] relative group/card dark:hover:shadow-2xl dark:hover:shadow-[#696969]/20 dark:bg-gradient-to-br dark:from-[#232323] dark:to-[#000000] dark:border-[#343434]/50 border-[#343434]/30 w-full h-full flex flex-col rounded-xl p-3 border backdrop-blur-sm">
         <CardItem
           translateZ="50"
-          className="text-sm md:text-base font-bold text-white mb-2 line-clamp-2 min-h-[2.5rem] group-hover/card:text-[#ffc300] transition-colors duration-300"
+          className="text-sm md:text-base font-bold text-white mb-2 line-clamp-2 min-h-[2.5rem] group-hover/card:text-[#696969] transition-colors duration-300"
         >
           {movie.title}
         </CardItem>
@@ -31,7 +31,7 @@ export default function MovieCard3D({ movie, priority = false }: MovieCard3DProp
           rotateZ={-5}
           className="w-full mt-2 flex-shrink-0"
         >
-          <div className="relative aspect-[2/3] w-full rounded-lg overflow-hidden bg-[#000814] shadow-lg shadow-[#003566]/20 group-hover/card:shadow-[#ffc300]/30 transition-shadow duration-300">
+          <div className="relative aspect-[2/3] w-full rounded-lg overflow-hidden bg-[#000000] shadow-lg shadow-[#343434]/20 group-hover/card:shadow-[#696969]/30 transition-shadow duration-300">
             {posterUrl.endsWith('.svg') ? (
               // Use regular img tag for SVG placeholder files
               <img
@@ -52,7 +52,7 @@ export default function MovieCard3D({ movie, priority = false }: MovieCard3DProp
               />
             )}
             {/* Gradient overlay for better text readability */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#000814]/80 via-transparent to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-300"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-[#000000]/80 via-transparent to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-300"></div>
           </div>
         </CardItem>
 

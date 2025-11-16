@@ -1,8 +1,6 @@
 import { notFound } from 'next/navigation';
 import { getMoviesByGenre, findGenreBySlug, getAllGenres, fetchMoviesFromOMDBByGenre, slugToGenre } from '@/lib/movies';
 import FeaturedMovies from '../components/FeaturedMovies';
-import NavigationHeader from '../components/NavigationHeader';
-import Footer from '../components/Footer';
 import SparklesBackground from '../components/SparklesBackground';
 
 interface GenrePageProps {
@@ -55,18 +53,16 @@ export default async function GenrePage({ params }: GenrePageProps) {
   }
 
   return (
-    <div className="min-h-screen relative bg-[#000814]">
+    <div className="min-h-screen relative bg-[#000000]">
       {/* Sparkles Background */}
       <SparklesBackground />
       
       {/* Content Layer */}
       <div className="relative z-10">
-        <NavigationHeader />
-        
         {/* Genre Header Section */}
         <section className="pt-32 pb-8 px-6">
           <div className="max-w-7xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-white via-[#ffc300] to-[#ffd60a] bg-clip-text text-transparent mb-4">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-white via-[#696969] to-[#7a7a7a] bg-clip-text text-transparent mb-4">
               {genreName} Movies
             </h1>
             <p className="text-gray-300 text-lg md:text-xl">
@@ -89,8 +85,6 @@ export default async function GenrePage({ params }: GenrePageProps) {
             </div>
           </section>
         )}
-        
-        <Footer />
       </div>
     </div>
   );

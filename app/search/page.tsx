@@ -2,8 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import NavigationHeader from '../components/NavigationHeader';
-import Footer from '../components/Footer';
 import MovieCard from '../components/MovieCard';
 import SparklesBackground from '../components/SparklesBackground';
 import { Movie } from '@/types/movie';
@@ -54,39 +52,37 @@ export default function SearchPage() {
   }, [query]);
 
   return (
-    <div className="min-h-screen relative bg-[#000814]">
+    <div className="min-h-screen relative bg-[#000000]">
       {/* Sparkles Background */}
       <SparklesBackground />
       
       {/* Content Layer */}
       <div className="relative z-10">
-        <NavigationHeader />
-        
         {/* Page Header */}
         <section className="pt-32 pb-8 px-6">
           <div className="max-w-7xl mx-auto">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-white via-[#ffc300] to-[#ffd60a] bg-clip-text text-transparent mb-4">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-white via-[#696969] to-[#7a7a7a] bg-clip-text text-transparent mb-4">
               Search Results
             </h1>
             
             {query && (
               <p className="text-gray-300 text-lg md:text-xl mb-6">
-                Results for: <span className="text-[#ffc300] font-semibold">&quot;{query}&quot;</span>
+                Results for: <span className="text-[#696969] font-semibold">&quot;{query}&quot;</span>
               </p>
             )}
 
             {/* Search Stats */}
             {!loading && query && (
               <div className="flex flex-wrap gap-4 mb-8">
-                <div className="px-4 py-2 bg-[#001d3d]/60 backdrop-blur-sm rounded-lg border border-[#003566]/50">
+                <div className="px-4 py-2 bg-[#232323]/60 backdrop-blur-sm rounded-lg border border-[#343434]/50">
                   <span className="text-gray-300 text-sm">Total: </span>
-                  <span className="text-[#ffc300] font-bold">{stats.totalCount}</span>
+                  <span className="text-[#696969] font-bold">{stats.totalCount}</span>
                 </div>
-                <div className="px-4 py-2 bg-[#001d3d]/60 backdrop-blur-sm rounded-lg border border-[#003566]/50">
+                <div className="px-4 py-2 bg-[#232323]/60 backdrop-blur-sm rounded-lg border border-[#343434]/50">
                   <span className="text-gray-300 text-sm">Local: </span>
                   <span className="text-white font-semibold">{stats.localCount}</span>
                 </div>
-                <div className="px-4 py-2 bg-[#001d3d]/60 backdrop-blur-sm rounded-lg border border-[#003566]/50">
+                <div className="px-4 py-2 bg-[#232323]/60 backdrop-blur-sm rounded-lg border border-[#343434]/50">
                   <span className="text-gray-300 text-sm">OMDB: </span>
                   <span className="text-white font-semibold">{stats.omdbCount}</span>
                 </div>
@@ -101,7 +97,7 @@ export default function SearchPage() {
             {loading ? (
               <div className="flex items-center justify-center py-20">
                 <div className="text-center">
-                  <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#ffc300] mb-4"></div>
+                  <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#696969] mb-4"></div>
                   <p className="text-gray-300">Searching movies...</p>
                 </div>
               </div>
@@ -110,7 +106,7 @@ export default function SearchPage() {
                 <p className="text-red-400 text-lg mb-4">{error}</p>
                 <button
                   onClick={() => router.push('/')}
-                  className="px-6 py-3 bg-[#ffc300] text-[#000814] rounded-lg font-semibold hover:bg-[#ffd60a] transition-colors duration-300"
+                  className="px-6 py-3 bg-[#464646] text-white rounded-lg font-semibold hover:bg-[#575757] transition-colors duration-300"
                 >
                   Go Home
                 </button>
@@ -120,7 +116,7 @@ export default function SearchPage() {
                 <p className="text-gray-300 text-lg mb-4">Please enter a search query</p>
                 <button
                   onClick={() => router.push('/')}
-                  className="px-6 py-3 bg-[#ffc300] text-[#000814] rounded-lg font-semibold hover:bg-[#ffd60a] transition-colors duration-300"
+                  className="px-6 py-3 bg-[#464646] text-white rounded-lg font-semibold hover:bg-[#575757] transition-colors duration-300"
                 >
                   Go Home
                 </button>
@@ -130,7 +126,7 @@ export default function SearchPage() {
                 <p className="text-gray-300 text-lg mb-4">No movies found for &quot;{query}&quot;</p>
                 <button
                   onClick={() => router.push('/')}
-                  className="px-6 py-3 bg-[#ffc300] text-[#000814] rounded-lg font-semibold hover:bg-[#ffd60a] transition-colors duration-300"
+                  className="px-6 py-3 bg-[#464646] text-white rounded-lg font-semibold hover:bg-[#575757] transition-colors duration-300"
                 >
                   Go Home
                 </button>
@@ -144,8 +140,6 @@ export default function SearchPage() {
             )}
           </div>
         </section>
-        
-        <Footer />
       </div>
     </div>
   );

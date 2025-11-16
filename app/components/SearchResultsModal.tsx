@@ -71,27 +71,27 @@ export default function SearchResultsModal({
             className="fixed inset-0 z-[100] flex items-center justify-center p-4 pointer-events-none"
           >
             <div
-              className="relative w-full max-w-7xl max-h-[90vh] bg-gradient-to-br from-[#000814] via-[#001d3d] to-[#000814] rounded-3xl border-2 border-[#003566]/60 shadow-2xl shadow-[#ffc300]/10 overflow-hidden pointer-events-auto flex flex-col backdrop-blur-xl"
+              className="relative w-full max-w-7xl max-h-[90vh] bg-gradient-to-br from-[#000000] via-[#232323] to-[#000000] rounded-3xl border-2 border-[#343434]/60 shadow-2xl shadow-[#696969]/10 overflow-hidden pointer-events-auto flex flex-col backdrop-blur-xl"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Header with gradient background */}
-              <div className="relative flex items-center justify-between p-6 border-b border-[#003566]/50 bg-gradient-to-r from-[#001d3d]/80 via-[#003566]/40 to-[#001d3d]/80 backdrop-blur-md">
+              <div className="relative flex items-center justify-between p-6 border-b border-[#343434]/50 bg-gradient-to-r from-[#232323]/80 via-[#343434]/40 to-[#232323]/80 backdrop-blur-md">
                 {/* Decorative gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-r from-[#ffc300]/5 via-transparent to-[#ffc300]/5"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-[#696969]/5 via-transparent to-[#696969]/5"></div>
                 
                 <div className="relative flex items-center gap-4">
-                  <div className="p-3 bg-gradient-to-br from-[#ffc300]/20 to-[#ffd60a]/10 rounded-xl border border-[#ffc300]/20">
-                    <IconSearch className="w-6 h-6 text-[#ffc300]" />
+                  <div className="p-3 bg-gradient-to-br from-[#696969]/20 to-[#7a7a7a]/10 rounded-xl border border-[#696969]/20">
+                    <IconSearch className="w-6 h-6 text-[#696969]" />
                   </div>
                   <div>
-                    <h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-white via-[#ffc300] to-[#ffd60a] bg-clip-text text-transparent flex items-center gap-2">
+                    <h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-white via-[#696969] to-[#7a7a7a] bg-clip-text text-transparent flex items-center gap-2">
                       Search Results
                     </h2>
                     {query && (
                       <p className="text-gray-300 text-sm md:text-base mt-1.5 flex items-center gap-2">
-                        <IconMovie className="w-4 h-4 text-[#ffc300]/60" />
+                        <IconMovie className="w-4 h-4 text-[#696969]/60" />
                         Results for:{" "}
-                        <span className="text-[#ffc300] font-semibold">
+                        <span className="text-[#696969] font-semibold">
                           &quot;{query}&quot;
                         </span>
                       </p>
@@ -100,7 +100,7 @@ export default function SearchResultsModal({
                 </div>
                 <button
                   onClick={onClose}
-                  className="relative p-2.5 text-gray-400 hover:text-white hover:bg-[#001d3d]/70 rounded-xl transition-all duration-200 border border-transparent hover:border-[#003566]/50 hover:shadow-lg hover:shadow-[#ffc300]/10"
+                  className="relative p-2.5 text-gray-400 hover:text-white hover:bg-[#232323]/70 rounded-xl transition-all duration-200 border border-transparent hover:border-[#343434]/50 hover:shadow-lg hover:shadow-[#696969]/10"
                   aria-label="Close modal"
                 >
                   <IconSquareRoundedX className="w-6 h-6" />
@@ -109,20 +109,20 @@ export default function SearchResultsModal({
 
               {/* Stats */}
               {!loading && query && (
-                <div className="flex flex-wrap gap-3 px-6 py-4 border-b border-[#003566]/50 bg-gradient-to-r from-[#001d3d]/40 via-[#003566]/20 to-[#001d3d]/40 backdrop-blur-sm">
-                  <div className="px-5 py-2.5 bg-gradient-to-br from-[#ffc300]/20 to-[#ffd60a]/10 backdrop-blur-sm rounded-xl border border-[#ffc300]/30 shadow-lg shadow-[#ffc300]/10">
+                <div className="flex flex-wrap gap-3 px-6 py-4 border-b border-[#343434]/50 bg-gradient-to-r from-[#232323]/40 via-[#343434]/20 to-[#232323]/40 backdrop-blur-sm">
+                  <div className="px-5 py-2.5 bg-gradient-to-br from-[#696969]/20 to-[#7a7a7a]/10 backdrop-blur-sm rounded-xl border border-[#696969]/30 shadow-lg shadow-[#696969]/10">
                     <div className="text-gray-300 text-xs uppercase tracking-wide mb-1">Total Results</div>
-                    <span className="text-[#ffc300] font-bold text-xl">
+                    <span className="text-[#696969] font-bold text-xl">
                       {stats.totalCount}
                     </span>
                   </div>
-                  <div className="px-5 py-2.5 bg-gradient-to-br from-[#001d3d]/80 to-[#003566]/60 backdrop-blur-sm rounded-xl border border-[#003566]/50 shadow-lg">
+                  <div className="px-5 py-2.5 bg-gradient-to-br from-[#232323]/80 to-[#343434]/60 backdrop-blur-sm rounded-xl border border-[#343434]/50 shadow-lg">
                     <div className="text-gray-400 text-xs uppercase tracking-wide mb-1">Local Database</div>
                     <span className="text-white font-semibold text-xl">
                       {stats.localCount}
                     </span>
                   </div>
-                  <div className="px-5 py-2.5 bg-gradient-to-br from-[#001d3d]/80 to-[#003566]/60 backdrop-blur-sm rounded-xl border border-[#003566]/50 shadow-lg">
+                  <div className="px-5 py-2.5 bg-gradient-to-br from-[#232323]/80 to-[#343434]/60 backdrop-blur-sm rounded-xl border border-[#343434]/50 shadow-lg">
                     <div className="text-gray-400 text-xs uppercase tracking-wide mb-1">OMDB API</div>
                     <span className="text-white font-semibold text-xl">
                       {stats.omdbCount}
@@ -132,13 +132,13 @@ export default function SearchResultsModal({
               )}
 
               {/* Content */}
-              <div className="flex-1 overflow-y-auto p-6 bg-gradient-to-b from-transparent via-[#000814]/20 to-transparent">
+              <div className="flex-1 overflow-y-auto p-6 bg-gradient-to-b from-transparent via-[#000000]/20 to-transparent">
                 {loading ? (
                   <div className="flex items-center justify-center py-20">
                     <div className="text-center">
                       <div className="relative inline-block">
-                        <div className="absolute inset-0 animate-ping rounded-full border-2 border-[#ffc300]/30"></div>
-                        <div className="relative inline-block animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#ffc300] mb-6"></div>
+                        <div className="absolute inset-0 animate-ping rounded-full border-2 border-[#696969]/30"></div>
+                        <div className="relative inline-block animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#696969] mb-6"></div>
                       </div>
                       <p className="text-gray-300 text-lg font-medium">Loading results...</p>
                       <p className="text-gray-500 text-sm mt-2">Please wait while we search</p>
@@ -146,14 +146,14 @@ export default function SearchResultsModal({
                   </div>
                 ) : movies.length === 0 ? (
                   <div className="text-center py-20">
-                    <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#001d3d]/50 border-2 border-[#003566]/50 mb-6">
+                    <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#232323]/50 border-2 border-[#343434]/50 mb-6">
                       <IconSearch className="w-10 h-10 text-gray-500" />
                     </div>
                     <p className="text-gray-300 text-xl font-semibold mb-2">
                       No movies found
                     </p>
                     <p className="text-gray-400 text-base mb-1">
-                      No results for &quot;<span className="text-[#ffc300]">{query}</span>&quot;
+                      No results for &quot;<span className="text-[#696969]">{query}</span>&quot;
                     </p>
                     <p className="text-gray-500 text-sm">
                       Try searching with different keywords or check your spelling

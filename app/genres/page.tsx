@@ -3,8 +3,6 @@
 import { useRouter } from 'next/navigation';
 import { getAllGenres, genreToSlug } from '@/lib/movies';
 import GenreGrid from '../components/GenreGrid';
-import NavigationHeader from '../components/NavigationHeader';
-import Footer from '../components/Footer';
 import SparklesBackground from '../components/SparklesBackground';
 
 export default function GenresPage() {
@@ -18,18 +16,16 @@ export default function GenresPage() {
   };
 
   return (
-    <div className="min-h-screen relative bg-[#000814]">
+    <div className="min-h-screen relative bg-[#000000]">
       {/* Sparkles Background */}
       <SparklesBackground />
       
       {/* Content Layer */}
       <div className="relative z-10">
-        <NavigationHeader />
-        
         {/* Page Header */}
         <section className="pt-32 pb-8 px-6">
           <div className="max-w-7xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-white via-[#ffc300] to-[#ffd60a] bg-clip-text text-transparent mb-4">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-white via-[#696969] to-[#7a7a7a] bg-clip-text text-transparent mb-4">
               Browse All Genres
             </h1>
             <p className="text-gray-300 text-lg md:text-xl">
@@ -40,8 +36,6 @@ export default function GenresPage() {
 
         {/* Genre Grid with Moving Cards */}
         <GenreGrid genres={allGenres} onGenreClick={handleGenreClick} />
-        
-        <Footer />
       </div>
     </div>
   );

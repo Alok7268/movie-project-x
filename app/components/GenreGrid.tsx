@@ -25,17 +25,17 @@ export default function GenreGrid({ genres, onGenreClick }: GenreGridProps) {
   const row3Genres = genreItems.slice(chunkSize * 2);
 
   return (
-    <section className="py-16 px-6">
+    <section className="py-8 md:py-16 px-4 md:px-6">
       <div className="max-w-7xl mx-auto">
         {/* Section Heading */}
-        <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-white to-[#ffc300] bg-clip-text text-transparent text-center mb-12">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-white to-[#696969] bg-clip-text text-transparent text-center mb-8 md:mb-12">
           Browse by Genre
         </h2>
 
         {/* Three Rows of Infinite Moving Cards */}
         <div className="space-y-2">
           {/* Row 1 - Moving Right, Fast */}
-          <div className="h-[180px] rounded-md flex flex-col antialiased bg-transparent items-center justify-center relative overflow-hidden">
+          <div className="h-[140px] sm:h-[160px] md:h-[180px] rounded-md flex flex-col antialiased bg-transparent items-center justify-center relative overflow-hidden">
             <InfiniteMovingCards
               items={row1Genres}
               direction="right"
@@ -45,7 +45,7 @@ export default function GenreGrid({ genres, onGenreClick }: GenreGridProps) {
           </div>
 
           {/* Row 2 - Moving Left, Normal */}
-          <div className="h-[180px] rounded-md flex flex-col antialiased bg-transparent items-center justify-center relative overflow-hidden">
+          <div className="h-[140px] sm:h-[160px] md:h-[180px] rounded-md flex flex-col antialiased bg-transparent items-center justify-center relative overflow-hidden">
             <InfiniteMovingCards
               items={row2Genres}
               direction="left"
@@ -55,7 +55,7 @@ export default function GenreGrid({ genres, onGenreClick }: GenreGridProps) {
           </div>
 
           {/* Row 3 - Moving Right, Slow */}
-          <div className="h-[180px] rounded-md flex flex-col antialiased bg-transparent items-center justify-center relative overflow-hidden z-30">
+          <div className="h-[140px] sm:h-[160px] md:h-[180px] rounded-md flex flex-col antialiased bg-transparent items-center justify-center relative overflow-hidden z-30">
             <InfiniteMovingCards
               items={row3Genres}
               direction="right"

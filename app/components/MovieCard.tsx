@@ -18,9 +18,9 @@ export default function MovieCard({ movie }: MovieCardProps) {
   const hasPoster = posterUrl && !posterUrl.endsWith('.svg') && !posterUrl.includes('no-poster') && !posterUrl.includes('placeholder') && !imageError;
 
   return (
-    <div className="group relative aspect-[2/3] rounded-lg overflow-hidden cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-[#ffc300]/20 bg-gradient-to-br from-[#001d3d] to-[#000814] border border-[#003566]/30">
+    <div className="group relative aspect-[2/3] rounded-lg overflow-hidden cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-[#696969]/20 bg-gradient-to-br from-[#232323] to-[#000000] border border-[#343434]/30">
       {/* Movie Poster or Placeholder */}
-      <div className="relative w-full h-full bg-gradient-to-br from-[#001d3d] via-[#000814] to-[#003566]">
+      <div className="relative w-full h-full bg-gradient-to-br from-[#232323] via-[#000000] to-[#343434]">
         {hasPoster ? (
           <Image
             src={posterUrl}
@@ -36,15 +36,15 @@ export default function MovieCard({ movie }: MovieCardProps) {
           />
         ) : (
           // Custom "No Image" Placeholder
-          <div className="absolute inset-0 flex flex-col items-center justify-center p-6 bg-gradient-to-br from-[#001d3d]/80 via-[#000814] to-[#003566]/60">
+          <div className="absolute inset-0 flex flex-col items-center justify-center p-6 bg-gradient-to-br from-[#232323]/80 via-[#000000] to-[#343434]/60">
             <div className="relative mb-4">
-              <div className="absolute inset-0 bg-[#ffc300]/10 rounded-full blur-xl"></div>
-              <div className="relative bg-gradient-to-br from-[#001d3d] to-[#003566] p-6 rounded-2xl border-2 border-[#003566]/50 shadow-lg">
-                <IconPhotoOff className="w-12 h-12 text-[#ffc300]/60" />
+              <div className="absolute inset-0 bg-[#696969]/10 rounded-full blur-xl"></div>
+              <div className="relative bg-gradient-to-br from-[#232323] to-[#343434] p-6 rounded-2xl border-2 border-[#343434]/50 shadow-lg">
+                <IconPhotoOff className="w-12 h-12 text-[#696969]/60" />
               </div>
             </div>
             <div className="text-center">
-              <IconMovie className="w-8 h-8 text-[#ffc300]/40 mx-auto mb-2" />
+              <IconMovie className="w-8 h-8 text-[#696969]/40 mx-auto mb-2" />
               <p className="text-gray-400 text-xs font-medium uppercase tracking-wide">No Image</p>
             </div>
           </div>
@@ -61,7 +61,7 @@ export default function MovieCard({ movie }: MovieCardProps) {
         )}
 
         {/* Glass-morphism Overlay on Hover */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#000814]/95 via-[#001d3d]/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-[#000000]/95 via-[#232323]/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
         {/* Movie Info on Hover */}
         <div className="absolute bottom-0 left-0 right-0 p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">

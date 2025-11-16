@@ -1,21 +1,24 @@
 @import "tailwindcss";
 
 :root {
-  /* New color palette */
-  --ink-black: #000814ff;
-  --prussian-blue: #001d3dff;
-  --regal-navy: #003566ff;
-  --school-bus-yellow: #ffc300ff;
-  --gold: #ffd60aff;
+  /* Gray color palette */
+  --gray-000: #000000;
+  --gray-111: #111111;
+  --gray-232: #232323;
+  --gray-343: #343434;
+  --gray-464: #464646;
+  --gray-575: #575757;
+  --gray-696: #696969;
+  --gray-7a7: #7a7a7a;
   
   /* Semantic color mappings */
-  --color-primary: var(--school-bus-yellow);
-  --color-secondary: var(--gold);
-  --color-accent-1: var(--regal-navy);
-  --color-accent-2: var(--prussian-blue);
-  --color-accent-3: var(--ink-black);
+  --color-primary: var(--gray-696);
+  --color-secondary: var(--gray-7a7);
+  --color-accent-1: var(--gray-464);
+  --color-accent-2: var(--gray-343);
+  --color-accent-3: var(--gray-232);
   
-  --background: var(--ink-black);
+  --background: var(--gray-000);
   --foreground: #ededed;
 }
 
@@ -28,7 +31,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: var(--ink-black);
+    --background: var(--gray-000);
     --foreground: #ededed;
   }
 }

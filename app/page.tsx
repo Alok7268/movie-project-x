@@ -5,8 +5,6 @@ import { getAllMovies, getAllGenres, getTopRated, getYearRange, genreToSlug } fr
 import ThreeDMarqueeHero from './components/ThreeDMarqueeHero';
 import FeaturedMovies from './components/FeaturedMovies';
 import GenreGrid from './components/GenreGrid';
-import NavigationHeader from './components/NavigationHeader';
-import Footer from './components/Footer';
 import SparklesBackground from './components/SparklesBackground';
 
 export default function Home() {
@@ -32,17 +30,15 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen relative bg-[#000814]">
+    <div className="min-h-screen relative bg-[#000000]">
       {/* Sparkles Background */}
       <SparklesBackground />
       
       {/* Content Layer */}
       <div className="relative z-10">
-        <NavigationHeader />
         <ThreeDMarqueeHero stats={stats} />
         <FeaturedMovies movies={topMovies} />
         <GenreGrid genres={allGenres} onGenreClick={handleGenreClick} />
-        <Footer />
       </div>
     </div>
   );

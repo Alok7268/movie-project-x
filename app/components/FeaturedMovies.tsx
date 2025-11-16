@@ -85,24 +85,25 @@ export default function FeaturedMovies({
   const selectedOption = sortOptions.find(opt => opt.value === sortBy) || sortOptions[0];
 
   return (
-    <section className="py-16 px-6">
+    <section className="pt-4 pb-8 md:py-16 px-4 md:px-6">
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
         {(title || showViewAll) && (
-        <div className="flex items-center justify-center mb-10 relative">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6 md:mb-10 relative">
           {title && (
-            <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-white to-[#ffc300] bg-clip-text text-transparent">{title}</h2>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-white to-[#696969] bg-clip-text text-transparent text-center sm:text-left">{title}</h2>
           )}
           {showViewAll && (
-            <div className="absolute right-0">
+            <div className="w-full sm:w-auto flex justify-center sm:justify-end">
               <div className="relative">
                 <button
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="flex items-center gap-2 text-[#ffc300] hover:text-[#ffd60a] font-semibold transition-colors duration-300 px-4 py-2 rounded-lg hover:bg-[#001d3d]/50 border border-[#003566]/50 hover:border-[#ffc300]/50"
+                  className="flex items-center gap-2 text-[#696969] hover:text-[#7a7a7a] font-semibold transition-colors duration-300 px-3 sm:px-4 py-2 rounded-lg hover:bg-[#232323]/50 border border-[#343434]/50 hover:border-[#696969]/50 text-sm sm:text-base whitespace-nowrap min-w-[140px] sm:min-w-0"
                 >
-                  {selectedOption.label}
+                  <span className="hidden sm:inline">{selectedOption.label}</span>
+                  <span className="sm:hidden">Sort</span>
                   <svg
-                    className={`w-5 h-5 transform transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`}
+                    className={`w-4 h-4 sm:w-5 sm:h-5 transform transition-transform duration-300 flex-shrink-0 ${isDropdownOpen ? 'rotate-180' : ''}`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -122,7 +123,7 @@ export default function FeaturedMovies({
                       className="fixed inset-0 z-10" 
                       onClick={() => setIsDropdownOpen(false)}
                     />
-                    <div className="absolute right-0 mt-2 w-56 rounded-lg bg-[#001d3d]/95 backdrop-blur-md border border-[#003566]/50 shadow-xl z-20 overflow-hidden">
+                    <div className="absolute right-0 sm:right-0 mt-2 w-[calc(100vw-2rem)] sm:w-56 max-w-[280px] sm:max-w-none rounded-lg bg-[#232323]/95 backdrop-blur-md border border-[#343434]/50 shadow-xl z-20 overflow-hidden">
                       <div className="py-1">
                         {sortOptions.map((option) => (
                           <button
@@ -131,10 +132,10 @@ export default function FeaturedMovies({
                               setSortBy(option.value);
                               setIsDropdownOpen(false);
                             }}
-                            className={`w-full text-left px-4 py-2 text-sm transition-colors duration-200 ${
+                            className={`w-full text-left px-4 py-2.5 sm:py-2 text-sm transition-colors duration-200 ${
                               sortBy === option.value
-                                ? 'bg-[#ffc300]/20 text-[#ffc300] font-semibold'
-                                : 'text-gray-300 hover:bg-[#003566]/50 hover:text-white'
+                                ? 'bg-[#696969]/20 text-[#696969] font-semibold'
+                                : 'text-gray-300 hover:bg-[#343434]/50 hover:text-white'
                             }`}
                           >
                             {option.label}
