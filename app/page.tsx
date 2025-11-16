@@ -1,45 +1,24 @@
-'use client';
+import { Metadata } from 'next';
+import HomeClient from './components/HomeClient';
 
-import { useRouter } from 'next/navigation';
-import { getAllMovies, getAllGenres, getTopRated, getYearRange, genreToSlug } from '@/lib/movies';
-import ThreeDMarqueeHero from './components/ThreeDMarqueeHero';
-import FeaturedMovies from './components/FeaturedMovies';
-import GenreGrid from './components/GenreGrid';
-import SparklesBackground from './components/SparklesBackground';
+// Export metadata for SEO (server component)
+export const metadata: Metadata = {
+  title: "Discover Your Next Favorite Movie",
+  description: "Explore thousands of movies across multiple genres. Find top-rated films, browse by year, director, or actor. Your ultimate movie discovery platform.",
+  keywords: ["movies", "film directory", "movie database", "top rated movies", "movie genres", "movie search"],
+  openGraph: {
+    title: "Discover Your Next Favorite Movie | Movie Directory",
+    description: "Explore thousands of movies across multiple genres. Find top-rated films, browse by year, director, or actor.",
+    url: "/",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Discover Your Next Favorite Movie | Movie Directory",
+    description: "Explore thousands of movies across multiple genres. Find top-rated films, browse by year, director, or actor.",
+  },
+};
 
 export default function Home() {
-  const router = useRouter();
-  
-  // Get data
-  const allMovies = getAllMovies();
-  const allGenres = getAllGenres();
-  const topMovies = getTopRated(18);
-  const yearRange = getYearRange();
-
-  // Calculate stats
-  const stats = {
-    total: allMovies.length,
-    genres: allGenres.length,
-    years: yearRange,
-  };
-
-  // Handle genre click - navigate to genre page
-  const handleGenreClick = (genre: string) => {
-    const slug = genreToSlug(genre);
-    router.push(`/${slug}`);
-  };
-
-  return (
-    <div className="min-h-screen relative bg-[#000000]">
-      {/* Sparkles Background */}
-      <SparklesBackground />
-      
-      {/* Content Layer */}
-      <div className="relative z-10">
-        <ThreeDMarqueeHero stats={stats} />
-        <FeaturedMovies movies={topMovies} />
-        <GenreGrid genres={allGenres} onGenreClick={handleGenreClick} />
-      </div>
-    </div>
-  );
+  return <HomeClient />;
 }

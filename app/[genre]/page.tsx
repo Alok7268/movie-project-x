@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import { Metadata } from 'next';
 import { getMoviesByGenre, findGenreBySlug, getAllGenres, fetchMoviesFromOMDBByGenre, slugToGenre } from '@/lib/movies';
 import FeaturedMovies from '../components/FeaturedMovies';
 import SparklesBackground from '../components/SparklesBackground';
@@ -15,6 +16,48 @@ export async function generateStaticParams() {
   return genres.map((genre) => ({
     genre: genre.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
   }));
+}
+
+// Generate metadata for genre pages
+export async function generateMetadata({ params }: GenrePageProps): Promise<Metadata> {
+  const { genre } = await params;
+  const genreSlug = decodeURIComponent(genre);
+  let genreName = findGenreBySlug(genreSlug);
+  
+  if (!genreName) {
+    genreName = slugToGenre(genreSlug);
+  }
+  
+  // Get movies for this genre
+  let genreMovies = getMoviesByGenre(genreName);
+  
+  // Try fetching from OMDB if no local movies
+  if (genreMovies.length === 0) {
+    try {
+      genreMovies = await fetchMoviesFromOMDBByGenre(genreName);
+    } catch (error) {
+      // Continue with empty array
+    }
+  }
+  
+  const description = `Discover ${genreMovies.length} amazing ${genreName.toLowerCase()} ${genreMovies.length === 1 ? 'movie' : 'movies'}. Browse top-rated ${genreName.toLowerCase()} films and find your next favorite.`;
+  
+  return {
+    title: `${genreName} Movies`,
+    description,
+    keywords: [genreName, `${genreName} movies`, "movies", "film directory", "movie genres"],
+    openGraph: {
+      title: `${genreName} Movies | Movie Directory`,
+      description,
+      url: `/${genre}`,
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${genreName} Movies | Movie Directory`,
+      description,
+    },
+  };
 }
 
 export default async function GenrePage({ params }: GenrePageProps) {

@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
+import { Metadata } from 'next';
 import { filterMovies, findGenreBySlug, MovieFilterOptions, getPopularGenres, getPopularActors, getPopularDirectors } from '@/lib/movies';
 import FeaturedMovies from '../components/FeaturedMovies';
 import SparklesBackground from '../components/SparklesBackground';
@@ -151,6 +152,64 @@ function parseSearchParams(searchParams: Awaited<MoviesPageProps['searchParams']
   }
   
   return filters;
+}
+
+// Generate metadata based on search params
+export async function generateMetadata({ searchParams }: MoviesPageProps): Promise<Metadata> {
+  const params = await searchParams;
+  const filters = parseSearchParams(params);
+  
+  // Generate page title from filters
+  const pageTitle = generatePageTitle(filters);
+  const filteredMovies = filterMovies(filters);
+  
+  let description = "Browse and filter movies by genre, actor, director, year, and rating. Discover the best movies tailored to your preferences.";
+  
+  if (Object.keys(filters).length > 0) {
+    const filterDescriptions: string[] = [];
+    if (filters.genres && filters.genres.length > 0) {
+      filterDescriptions.push(`${filters.genres.join(', ')} movies`);
+    }
+    if (filters.actors && filters.actors.length > 0) {
+      filterDescriptions.push(`featuring ${filters.actors.join(', ')}`);
+    }
+    if (filters.directors && filters.directors.length > 0) {
+      filterDescriptions.push(`directed by ${filters.directors.join(', ')}`);
+    }
+    if (filters.years && filters.years.length > 0) {
+      filterDescriptions.push(`from ${filters.years.join(', ')}`);
+    }
+    if (filters.decades && filters.decades.length > 0) {
+      filterDescriptions.push(`from the ${filters.decades.map(d => `${d}s`).join(', ')}`);
+    }
+    
+    description = `Discover ${filteredMovies.length} ${filterDescriptions.join(' ')}. ${description}`;
+  }
+  
+  return {
+    title: pageTitle,
+    description,
+    keywords: [
+      ...(filters.genres || []),
+      ...(filters.actors || []),
+      ...(filters.directors || []),
+      "movies",
+      "film directory",
+      "movie filter",
+      "best movies",
+    ],
+    openGraph: {
+      title: `${pageTitle} | Movie Directory`,
+      description,
+      url: `/movies${Object.keys(params).length > 0 ? '?' + new URLSearchParams(params as any).toString() : ''}`,
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${pageTitle} | Movie Directory`,
+      description,
+    },
+  };
 }
 
 export default async function MoviesPage({ searchParams }: MoviesPageProps) {
