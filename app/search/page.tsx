@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import MovieCard from '../components/MovieCard';
+import ExpandableCard from '../components/ui/expandable-card';
 import SparklesBackground from '../components/SparklesBackground';
 import { Movie } from '@/types/movie';
 
@@ -15,6 +16,7 @@ export default function SearchPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [stats, setStats] = useState({ localCount: 0, omdbCount: 0, totalCount: 0 });
+  const [activeMovie, setActiveMovie] = useState<Movie | null>(null);
 
   useEffect(() => {
     const fetchSearchResults = async () => {
@@ -52,12 +54,17 @@ export default function SearchPage() {
   }, [query]);
 
   return (
-    <div className="min-h-screen relative bg-[#000000]">
-      {/* Sparkles Background */}
-      <SparklesBackground />
-      
-      {/* Content Layer */}
-      <div className="relative z-10">
+    <>
+      <ExpandableCard 
+        activeMovie={activeMovie} 
+        onClose={() => setActiveMovie(null)} 
+      />
+      <div className="min-h-screen relative bg-[#000000]">
+        {/* Sparkles Background */}
+        <SparklesBackground />
+        
+        {/* Content Layer */}
+        <div className="relative z-10">
         {/* Page Header */}
         <section className="pt-32 pb-8 px-6">
           <div className="max-w-7xl mx-auto">
@@ -134,7 +141,11 @@ export default function SearchPage() {
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6">
                 {movies.map((movie) => (
-                  <MovieCard key={movie.id} movie={movie} />
+                  <MovieCard 
+                    key={movie.id} 
+                    movie={movie} 
+                    onClick={() => setActiveMovie(movie)}
+                  />
                 ))}
               </div>
             )}
@@ -142,6 +153,7 @@ export default function SearchPage() {
         </section>
       </div>
     </div>
+    </>
   );
 }
 

@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react';
 import { Movie } from '@/types/movie';
 import MovieCard3D from './MovieCard3D';
+import ExpandableCard from './ui/expandable-card';
 
 interface FeaturedMoviesProps {
   movies: Movie[];
@@ -44,6 +45,7 @@ export default function FeaturedMovies({
 }: FeaturedMoviesProps) {
   const [sortBy, setSortBy] = useState<SortOption>('rating-desc');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [activeMovie, setActiveMovie] = useState<Movie | null>(null);
 
   const sortedMovies = useMemo(() => {
     const moviesCopy = [...movies];
@@ -85,8 +87,13 @@ export default function FeaturedMovies({
   const selectedOption = sortOptions.find(opt => opt.value === sortBy) || sortOptions[0];
 
   return (
-    <section className="pt-4 pb-8 md:py-16 px-4 md:px-6">
-      <div className="max-w-7xl mx-auto">
+    <>
+      <ExpandableCard 
+        activeMovie={activeMovie} 
+        onClose={() => setActiveMovie(null)} 
+      />
+      <section className="pt-4 pb-8 md:py-16 px-4 md:px-6">
+        <div className="max-w-7xl mx-auto">
         {/* Section Header */}
         {(title || showViewAll) && (
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6 md:mb-10 relative">
@@ -158,11 +165,13 @@ export default function FeaturedMovies({
               key={movie.id} 
               movie={movie} 
               priority={index < 6} // Prioritize first 6 images (above the fold)
+              onClick={() => setActiveMovie(movie)}
             />
           ))}
         </div>
       </div>
     </section>
+    </>
   );
 }
 

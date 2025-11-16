@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { IconSquareRoundedX, IconSearch, IconMovie } from "@tabler/icons-react";
 import MovieCard from "./MovieCard";
+import ExpandableCard from "./ui/expandable-card";
 import { Movie } from "@/types/movie";
 
 interface SearchResultsModalProps {
@@ -27,6 +28,8 @@ export default function SearchResultsModal({
   stats,
   loading,
 }: SearchResultsModalProps) {
+  const [activeMovie, setActiveMovie] = useState<Movie | null>(null);
+
   // Close modal on escape key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -50,9 +53,14 @@ export default function SearchResultsModal({
   if (!isOpen) return null;
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
+    <>
+      <ExpandableCard 
+        activeMovie={activeMovie} 
+        onClose={() => setActiveMovie(null)} 
+      />
+      <AnimatePresence>
+        {isOpen && (
+          <>
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -162,7 +170,11 @@ export default function SearchResultsModal({
                 ) : (
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6">
                     {movies.map((movie) => (
-                      <MovieCard key={movie.id} movie={movie} />
+                      <MovieCard 
+                        key={movie.id} 
+                        movie={movie} 
+                        onClick={() => setActiveMovie(movie)}
+                      />
                     ))}
                   </div>
                 )}
@@ -172,6 +184,7 @@ export default function SearchResultsModal({
         </>
       )}
     </AnimatePresence>
+    </>
   );
 }
 
